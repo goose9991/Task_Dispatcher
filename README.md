@@ -1,1 +1,79 @@
-# Task_Dispatcher
+# A Comparison of Two Task Dispatch Policies
+This report attempts to compare two task dispatch policies implemented in Rust over a shared worker pool with a bounded CPU budget. 
+
+The first policy dispatches tasks in a First-In-First-Out (FIFO) manner. The second policy is optimized to be a budget-aware dispatcher with aging-based starvation prevention.
+
+Each policy’s implementations are described, tested, and further stress tested against burst task delivery.
+
+## Build instructions:
+Linux: open terminal and run: 
+>curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+Choose option 1 when prompted
+
+Close and reopen terminal, then run:
+>source $HOME/.cargo/env
+
+For each folder, fifo and optimized, cd into each folder and install rand:
+>cargo add rand
+
+Add the following to the bottom of fifo/Cargo.toml if not done so already:
+
+```
+[[bin]]
+name = "fifo"
+path = "src/main.rs"
+
+[[bin]]
+name = "stressed"
+path = "src/stressed.rs"
+```
+
+Add a similar block to optimized/Cargo.toml:
+```
+[[bin]]
+name = "optimized"
+path = "src/main.rs"
+
+[[bin]]
+name = "stressed"
+path = "src/stressed.rs"
+```
+
+#### To run the initial balanced test:
+
+cd into either fifo or optimized and run:
+>cargo run --release fifo
+
+#### or 
+
+>cargo run --release optimized
+
+#### To run stress test for either:
+cd into either fifo or optimized and run:
+>cargo run --release --bin stressed
+
+### To output txt files for comparison:
+
+#### For fifo:
+
+cd into fifo
+
+for initial run:
+>cargo run --release --bin fifo > fifo_balanced.txt
+
+for fifo stress test:
+>cargo run --release --bin stressed > fifo_stressed.txt
+
+#### For optimized:
+
+cd into optimized
+
+for initial run:
+>cargo run --release --bin optimized > optimized_balanced.txt
+
+for optimized stress test:
+>cargo run --release --bin stressed > optimized_stressed.txt
+
+#### Tool Use Disclosure:
+AI assistance (Anthropic's Claude) was used during this project for debugging concurrency issues, refining the scheduling policy through iterative testing, and clarifying Rust-specific syntax around Mutex, Condvar, and Arc. All implementation decisions, experimental design, and results analysis were directed by the author. All code was reviewed and tested by the author before inclusion.
