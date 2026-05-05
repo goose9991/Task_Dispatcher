@@ -1,0 +1,2049 @@
+=======================================================
+  Optimized – Budget-Aware Dispatch + Aging
+=======================================================
+  Tasks:           1000
+  Workers:         8 (shared pool)
+  Arrival rate:    1 task every 20 ms
+  IO task:         10% CPU, 200 ms
+  CPU task:        35% CPU, 200 ms
+  IO/CPU ratio:    70% / 30%  |  Seed: 42
+  Aging threshold: 20 skips
+
+  Policy: budget-aware dispatch with aging
+    Problem with IO-first: 8 IO workers = 80% budget max.
+    20% budget always idle when all workers are on IO tasks.
+    Fix: when remaining budget >= 35%, prefer CPU tasks —
+    they fill that dead space (6IO+1CPU = 95% vs 8IO = 80%).
+    IO tasks still run concurrently, keeping IO wait low.
+    Aging (threshold=20) prevents CPU task starvation.
+
+[*] Running...
+[Worker  0] START  task    1 | kind: Io | skips:  0 | arrived: 21ms
+[Worker  4] START  task    2 | kind: Io | skips:  0 | arrived: 41ms
+[Worker  5] START  task    3 | kind: Io | skips:  0 | arrived: 61ms
+[Worker  1] START  task    4 | kind: Io | skips:  0 | arrived: 81ms
+[Worker  7] START  task    5 | kind: Io | skips:  0 | arrived: 102ms
+[Worker  2] START  task    6 | kind: Io | skips:  0 | arrived: 122ms
+[Worker  6] START  task    7 | kind: Cpu | skips:  0 | arrived: 142ms
+[Worker  0] FINISH task    1 | kind: Io | arrived: 21ms | wait: 0ms | turnaround: 200ms
+[Worker  0] START  task    9 | kind: Io | skips:  0 | arrived: 182ms
+[Worker  4] FINISH task    2 | kind: Io | arrived: 41ms | wait: 0ms | turnaround: 200ms
+[Worker  4] START  task   10 | kind: Io | skips:  0 | arrived: 202ms
+[Worker  5] FINISH task    3 | kind: Io | arrived: 61ms | wait: 0ms | turnaround: 200ms
+[Worker  5] START  task   12 | kind: Io | skips:  0 | arrived: 242ms
+[Worker  1] FINISH task    4 | kind: Io | arrived: 81ms | wait: 0ms | turnaround: 200ms
+[Worker  1] START  task   13 | kind: Io | skips:  0 | arrived: 262ms
+[Worker  7] FINISH task    5 | kind: Io | arrived: 102ms | wait: 0ms | turnaround: 200ms
+[Worker  7] START  task   14 | kind: Io | skips:  0 | arrived: 282ms
+[Worker  2] FINISH task    6 | kind: Io | arrived: 122ms | wait: 0ms | turnaround: 200ms
+[Worker  2] START  task   15 | kind: Io | skips:  0 | arrived: 302ms
+[Worker  6] FINISH task    7 | kind: Cpu | arrived: 142ms | wait: 0ms | turnaround: 200ms
+[Worker  6] START  task    8 | kind: Cpu | skips:  6 | arrived: 162ms
+[Worker  0] FINISH task    9 | kind: Io | arrived: 182ms | wait: 39ms | turnaround: 239ms
+[Worker  0] START  task   16 | kind: Io | skips:  0 | arrived: 323ms
+[Worker  4] FINISH task   10 | kind: Io | arrived: 202ms | wait: 39ms | turnaround: 239ms
+[Worker  4] START  task   17 | kind: Io | skips:  0 | arrived: 343ms
+[Worker  5] FINISH task   12 | kind: Io | arrived: 242ms | wait: 19ms | turnaround: 219ms
+[Worker  5] START  task   18 | kind: Io | skips:  0 | arrived: 363ms
+[Worker  1] FINISH task   13 | kind: Io | arrived: 262ms | wait: 19ms | turnaround: 219ms
+[Worker  1] START  task   19 | kind: Io | skips:  0 | arrived: 383ms
+[Worker  7] FINISH task   14 | kind: Io | arrived: 282ms | wait: 19ms | turnaround: 219ms
+[Worker  7] START  task   20 | kind: Io | skips:  0 | arrived: 403ms
+[Worker  2] FINISH task   15 | kind: Io | arrived: 302ms | wait: 20ms | turnaround: 220ms
+[Worker  2] START  task   22 | kind: Io | skips:  0 | arrived: 443ms
+[Worker  6] FINISH task    8 | kind: Cpu | arrived: 162ms | wait: 180ms | turnaround: 380ms
+[Worker  6] START  task   11 | kind: Cpu | skips: 10 | arrived: 222ms
+[Worker  0] FINISH task   16 | kind: Io | arrived: 323ms | wait: 98ms | turnaround: 298ms
+[Worker  3] START  task   23 | kind: Io | skips:  0 | arrived: 463ms
+[Worker  4] FINISH task   17 | kind: Io | arrived: 343ms | wait: 99ms | turnaround: 299ms
+[Worker  4] START  task   24 | kind: Io | skips:  0 | arrived: 483ms
+[Worker  5] FINISH task   18 | kind: Io | arrived: 363ms | wait: 99ms | turnaround: 299ms
+[Worker  5] START  task   25 | kind: Io | skips:  0 | arrived: 503ms
+[Worker  1] FINISH task   19 | kind: Io | arrived: 383ms | wait: 98ms | turnaround: 299ms
+[Worker  1] START  task   26 | kind: Io | skips:  0 | arrived: 523ms
+[Worker  7] FINISH task   20 | kind: Io | arrived: 403ms | wait: 99ms | turnaround: 299ms
+[Worker  7] START  task   28 | kind: Io | skips:  0 | arrived: 567ms
+[Worker  2] FINISH task   22 | kind: Io | arrived: 443ms | wait: 79ms | turnaround: 279ms
+[Worker  2] START  task   29 | kind: Io | skips:  0 | arrived: 587ms
+[Worker  6] FINISH task   11 | kind: Cpu | arrived: 222ms | wait: 319ms | turnaround: 520ms
+[Worker  6] START  task   21 | kind: Cpu | skips:  7 | arrived: 423ms
+[Worker  3] FINISH task   23 | kind: Io | arrived: 463ms | wait: 158ms | turnaround: 358ms
+[Worker  3] START  task   30 | kind: Io | skips:  0 | arrived: 607ms
+[Worker  4] FINISH task   24 | kind: Io | arrived: 483ms | wait: 158ms | turnaround: 358ms
+[Worker  4] START  task   31 | kind: Io | skips:  0 | arrived: 627ms
+[Worker  5] FINISH task   25 | kind: Io | arrived: 503ms | wait: 159ms | turnaround: 359ms
+[Worker  5] START  task   35 | kind: Io | skips:  0 | arrived: 708ms
+[Worker  1] FINISH task   26 | kind: Io | arrived: 523ms | wait: 158ms | turnaround: 358ms
+[Worker  1] START  task   36 | kind: Io | skips:  0 | arrived: 728ms
+[Worker  7] FINISH task   28 | kind: Io | arrived: 567ms | wait: 135ms | turnaround: 335ms
+[Worker  7] START  task   37 | kind: Io | skips:  0 | arrived: 748ms
+[Worker  2] FINISH task   29 | kind: Io | arrived: 587ms | wait: 135ms | turnaround: 335ms
+[Worker  2] START  task   38 | kind: Io | skips:  0 | arrived: 768ms
+[Worker  6] FINISH task   21 | kind: Cpu | arrived: 423ms | wait: 319ms | turnaround: 519ms
+[Worker  6] START  task   27 | kind: Cpu | skips:  8 | arrived: 545ms
+[Worker  3] FINISH task   30 | kind: Io | arrived: 607ms | wait: 214ms | turnaround: 414ms
+[Worker  3] START  task   39 | kind: Io | skips:  0 | arrived: 788ms
+[Worker  4] FINISH task   31 | kind: Io | arrived: 627ms | wait: 214ms | turnaround: 414ms
+[Worker  4] START  task   40 | kind: Io | skips:  0 | arrived: 808ms
+[Worker  5] FINISH task   35 | kind: Io | arrived: 708ms | wait: 154ms | turnaround: 354ms
+[Worker  5] START  task   42 | kind: Io | skips:  0 | arrived: 848ms
+[Worker  1] FINISH task   36 | kind: Io | arrived: 728ms | wait: 154ms | turnaround: 354ms
+[Worker  1] START  task   43 | kind: Io | skips:  0 | arrived: 868ms
+[Worker  7] FINISH task   37 | kind: Io | arrived: 748ms | wait: 154ms | turnaround: 354ms
+[Worker  7] START  task   44 | kind: Io | skips:  0 | arrived: 889ms
+[Worker  2] FINISH task   38 | kind: Io | arrived: 768ms | wait: 155ms | turnaround: 355ms
+[Worker  2] START  task   45 | kind: Io | skips:  0 | arrived: 909ms
+[Worker  6] FINISH task   27 | kind: Cpu | arrived: 545ms | wait: 397ms | turnaround: 597ms
+[Worker  6] START  task   32 | kind: Cpu | skips: 10 | arrived: 648ms
+[Worker  3] FINISH task   39 | kind: Io | arrived: 788ms | wait: 233ms | turnaround: 434ms
+[Worker  3] START  task   46 | kind: Io | skips:  0 | arrived: 929ms
+[Worker  4] FINISH task   40 | kind: Io | arrived: 808ms | wait: 234ms | turnaround: 434ms
+[Worker  4] START  task   47 | kind: Io | skips:  0 | arrived: 949ms
+[Worker  5] FINISH task   42 | kind: Io | arrived: 848ms | wait: 214ms | turnaround: 414ms
+[Worker  5] START  task   50 | kind: Io | skips:  0 | arrived: 1010ms
+[Worker  1] FINISH task   43 | kind: Io | arrived: 868ms | wait: 213ms | turnaround: 413ms
+[Worker  1] START  task   53 | kind: Io | skips:  0 | arrived: 1071ms
+[Worker  7] FINISH task   44 | kind: Io | arrived: 889ms | wait: 214ms | turnaround: 414ms
+[Worker  7] START  task   54 | kind: Io | skips:  0 | arrived: 1091ms
+[Worker  2] FINISH task   45 | kind: Io | arrived: 909ms | wait: 214ms | turnaround: 414ms
+[Worker  2] START  task   55 | kind: Io | skips:  0 | arrived: 1111ms
+[Worker  6] FINISH task   32 | kind: Cpu | arrived: 648ms | wait: 494ms | turnaround: 695ms
+[Worker  6] START  task   33 | kind: Cpu | skips: 16 | arrived: 668ms
+[Worker  3] FINISH task   46 | kind: Io | arrived: 929ms | wait: 293ms | turnaround: 493ms
+[Worker  3] START  task   56 | kind: Io | skips:  0 | arrived: 1131ms
+[Worker  4] FINISH task   47 | kind: Io | arrived: 949ms | wait: 293ms | turnaround: 493ms
+[Worker  4] START  task   57 | kind: Io | skips:  0 | arrived: 1151ms
+[Worker  5] FINISH task   50 | kind: Io | arrived: 1010ms | wait: 252ms | turnaround: 453ms
+[Worker  5] START  task   58 | kind: Io | skips:  0 | arrived: 1171ms
+[Worker  1] FINISH task   53 | kind: Io | arrived: 1071ms | wait: 211ms | turnaround: 411ms
+[Worker  1] START  task   59 | kind: Io | skips:  0 | arrived: 1191ms
+[Worker  7] FINISH task   54 | kind: Io | arrived: 1091ms | wait: 212ms | turnaround: 412ms
+[Worker  2] FINISH task   55 | kind: Io | arrived: 1111ms | wait: 212ms | turnaround: 412ms
+[Worker  6] FINISH task   33 | kind: Cpu | arrived: 668ms | wait: 675ms | turnaround: 876ms
+[Worker  0] START  task   34 | kind: Cpu | skips: 20 | arrived: 688ms
+[Worker  2] START  task   60 | kind: Io | skips:  0 | arrived: 1211ms
+[Worker  7] START  task   62 | kind: Io | skips:  0 | arrived: 1251ms
+[Worker  3] FINISH task   56 | kind: Io | arrived: 1131ms | wait: 291ms | turnaround: 492ms
+[Worker  3] START  task   63 | kind: Io | skips:  0 | arrived: 1271ms
+[Worker  4] FINISH task   57 | kind: Io | arrived: 1151ms | wait: 291ms | turnaround: 491ms
+[Worker  4] START  task   64 | kind: Io | skips:  0 | arrived: 1292ms
+[Worker  5] FINISH task   58 | kind: Io | arrived: 1171ms | wait: 292ms | turnaround: 492ms
+[Worker  5] START  task   65 | kind: Io | skips:  0 | arrived: 1312ms
+[Worker  1] FINISH task   59 | kind: Io | arrived: 1191ms | wait: 291ms | turnaround: 491ms
+[Worker  1] START  task   66 | kind: Io | skips:  0 | arrived: 1332ms
+[Worker  0] FINISH task   34 | kind: Cpu | arrived: 688ms | wait: 856ms | turnaround: 1056ms
+[Worker  0] START  task   41 | kind: Cpu | skips: 20 | arrived: 828ms
+[Worker  2] FINISH task   60 | kind: Io | arrived: 1211ms | wait: 332ms | turnaround: 532ms
+[Worker  2] START  task   67 | kind: Io | skips:  0 | arrived: 1352ms
+[Worker  7] FINISH task   62 | kind: Io | arrived: 1251ms | wait: 292ms | turnaround: 492ms
+[Worker  7] START  task   68 | kind: Io | skips:  0 | arrived: 1372ms
+[Worker  3] FINISH task   63 | kind: Io | arrived: 1271ms | wait: 352ms | turnaround: 552ms
+[Worker  3] START  task   69 | kind: Io | skips:  0 | arrived: 1392ms
+[Worker  4] FINISH task   64 | kind: Io | arrived: 1292ms | wait: 351ms | turnaround: 551ms
+[Worker  4] START  task   70 | kind: Io | skips:  0 | arrived: 1412ms
+[Worker  5] FINISH task   65 | kind: Io | arrived: 1312ms | wait: 351ms | turnaround: 551ms
+[Worker  5] START  task   71 | kind: Io | skips:  0 | arrived: 1432ms
+[Worker  1] FINISH task   66 | kind: Io | arrived: 1332ms | wait: 351ms | turnaround: 551ms
+[Worker  1] START  task   72 | kind: Io | skips:  0 | arrived: 1452ms
+[Worker  0] FINISH task   41 | kind: Cpu | arrived: 828ms | wait: 915ms | turnaround: 1115ms
+[Worker  0] START  task   48 | kind: Cpu | skips: 20 | arrived: 969ms
+[Worker  2] FINISH task   67 | kind: Io | arrived: 1352ms | wait: 392ms | turnaround: 592ms
+[Worker  7] FINISH task   68 | kind: Io | arrived: 1372ms | wait: 372ms | turnaround: 572ms
+[Worker  3] FINISH task   69 | kind: Io | arrived: 1392ms | wait: 431ms | turnaround: 631ms
+[Worker  3] START  task   49 | kind: Cpu | skips: 20 | arrived: 989ms
+[Worker  4] FINISH task   70 | kind: Io | arrived: 1412ms | wait: 431ms | turnaround: 631ms
+[Worker  5] FINISH task   71 | kind: Io | arrived: 1432ms | wait: 431ms | turnaround: 631ms
+[Worker  5] START  task   74 | kind: Io | skips:  0 | arrived: 1492ms
+[Worker  1] FINISH task   72 | kind: Io | arrived: 1452ms | wait: 431ms | turnaround: 632ms
+[Worker  0] FINISH task   48 | kind: Cpu | arrived: 969ms | wait: 975ms | turnaround: 1175ms
+[Worker  0] START  task   51 | kind: Cpu | skips: 20 | arrived: 1030ms
+[Worker  3] FINISH task   49 | kind: Cpu | arrived: 989ms | wait: 1034ms | turnaround: 1234ms
+[Worker  3] START  task   52 | kind: Cpu | skips: 20 | arrived: 1050ms
+[Worker  6] START  task   75 | kind: Io | skips:  0 | arrived: 1512ms
+[Worker  5] FINISH task   74 | kind: Io | arrived: 1492ms | wait: 571ms | turnaround: 771ms
+[Worker  5] START  task   76 | kind: Io | skips:  0 | arrived: 1539ms
+[Worker  0] FINISH task   51 | kind: Cpu | arrived: 1030ms | wait: 1114ms | turnaround: 1314ms
+[Worker  0] START  task   61 | kind: Cpu | skips: 14 | arrived: 1231ms
+[Worker  3] FINISH task   52 | kind: Cpu | arrived: 1050ms | wait: 1173ms | turnaround: 1374ms
+[Worker  3] START  task   73 | kind: Cpu | skips:  3 | arrived: 1472ms
+[Worker  6] FINISH task   75 | kind: Io | arrived: 1512ms | wait: 711ms | turnaround: 912ms
+[Worker  6] START  task   78 | kind: Io | skips:  0 | arrived: 1579ms
+[Worker  5] FINISH task   76 | kind: Io | arrived: 1539ms | wait: 725ms | turnaround: 925ms
+[Worker  5] START  task   79 | kind: Io | skips:  0 | arrived: 1599ms
+[Worker  0] FINISH task   61 | kind: Cpu | arrived: 1231ms | wait: 1113ms | turnaround: 1313ms
+[Worker  0] START  task   77 | kind: Cpu | skips:  2 | arrived: 1559ms
+[Worker  3] FINISH task   73 | kind: Cpu | arrived: 1472ms | wait: 952ms | turnaround: 1152ms
+[Worker  3] START  task   80 | kind: Cpu | skips:  0 | arrived: 1619ms
+[Worker  6] FINISH task   78 | kind: Io | arrived: 1579ms | wait: 845ms | turnaround: 1046ms
+[Worker  6] START  task   81 | kind: Io | skips:  0 | arrived: 1639ms
+[Worker  5] FINISH task   79 | kind: Io | arrived: 1599ms | wait: 865ms | turnaround: 1066ms
+[Worker  5] START  task   82 | kind: Io | skips:  0 | arrived: 1659ms
+[Worker  0] FINISH task   77 | kind: Cpu | arrived: 1559ms | wait: 986ms | turnaround: 1186ms
+[Worker  0] START  task   84 | kind: Cpu | skips:  0 | arrived: 1700ms
+[Worker  3] FINISH task   80 | kind: Cpu | arrived: 1619ms | wait: 1005ms | turnaround: 1205ms
+[Worker  3] START  task   89 | kind: Cpu | skips:  0 | arrived: 1800ms
+[Worker  6] FINISH task   81 | kind: Io | arrived: 1639ms | wait: 991ms | turnaround: 1192ms
+[Worker  6] START  task   83 | kind: Io | skips:  2 | arrived: 1679ms
+[Worker  5] FINISH task   82 | kind: Io | arrived: 1659ms | wait: 1005ms | turnaround: 1206ms
+[Worker  5] START  task   85 | kind: Io | skips:  1 | arrived: 1720ms
+[Worker  0] FINISH task   84 | kind: Cpu | arrived: 1700ms | wait: 1045ms | turnaround: 1245ms
+[Worker  0] START  task   90 | kind: Cpu | skips:  0 | arrived: 1820ms
+[Worker  3] FINISH task   89 | kind: Cpu | arrived: 1800ms | wait: 1025ms | turnaround: 1225ms
+[Worker  3] START  task   92 | kind: Cpu | skips:  0 | arrived: 1860ms
+[Worker  6] FINISH task   83 | kind: Io | arrived: 1679ms | wait: 1151ms | turnaround: 1352ms
+[Worker  6] START  task   86 | kind: Io | skips:  3 | arrived: 1740ms
+[Worker  5] FINISH task   85 | kind: Io | arrived: 1720ms | wait: 1145ms | turnaround: 1345ms
+[Worker  5] START  task   87 | kind: Io | skips:  3 | arrived: 1760ms
+[Worker  0] FINISH task   90 | kind: Cpu | arrived: 1820ms | wait: 1125ms | turnaround: 1325ms
+[Worker  0] START  task   94 | kind: Cpu | skips:  0 | arrived: 1902ms
+[Worker  3] FINISH task   92 | kind: Cpu | arrived: 1860ms | wait: 1165ms | turnaround: 1365ms
+[Worker  3] START  task   95 | kind: Cpu | skips:  0 | arrived: 1922ms
+[Worker  6] FINISH task   86 | kind: Io | arrived: 1740ms | wait: 1291ms | turnaround: 1491ms
+[Worker  6] START  task   88 | kind: Io | skips:  5 | arrived: 1780ms
+[Worker  5] FINISH task   87 | kind: Io | arrived: 1760ms | wait: 1307ms | turnaround: 1507ms
+[Worker  5] START  task   91 | kind: Io | skips:  3 | arrived: 1840ms
+[Worker  0] FINISH task   94 | kind: Cpu | arrived: 1902ms | wait: 1244ms | turnaround: 1444ms
+[Worker  0] START  task   98 | kind: Cpu | skips:  0 | arrived: 1982ms
+[Worker  3] FINISH task   95 | kind: Cpu | arrived: 1922ms | wait: 1303ms | turnaround: 1503ms
+[Worker  3] START  task   99 | kind: Cpu | skips:  0 | arrived: 2002ms
+[Worker  6] FINISH task   88 | kind: Io | arrived: 1780ms | wait: 1451ms | turnaround: 1651ms
+[Worker  6] START  task   93 | kind: Io | skips:  4 | arrived: 1881ms
+[Worker  5] FINISH task   91 | kind: Io | arrived: 1840ms | wait: 1427ms | turnaround: 1627ms
+[Worker  5] START  task   96 | kind: Io | skips:  2 | arrived: 1942ms
+[Worker  0] FINISH task   98 | kind: Cpu | arrived: 1982ms | wait: 1363ms | turnaround: 1563ms
+[Worker  0] START  task  103 | kind: Cpu | skips:  0 | arrived: 2082ms
+[Worker  3] FINISH task   99 | kind: Cpu | arrived: 2002ms | wait: 1423ms | turnaround: 1623ms
+[Worker  3] START  task  104 | kind: Cpu | skips:  0 | arrived: 2102ms
+[Worker  6] FINISH task   93 | kind: Io | arrived: 1881ms | wait: 1550ms | turnaround: 1750ms
+[Worker  6] START  task   97 | kind: Io | skips:  4 | arrived: 1962ms
+[Worker  5] FINISH task   96 | kind: Io | arrived: 1942ms | wait: 1525ms | turnaround: 1725ms
+[Worker  5] START  task  100 | kind: Io | skips:  2 | arrived: 2022ms
+[Worker  0] FINISH task  103 | kind: Cpu | arrived: 2082ms | wait: 1463ms | turnaround: 1663ms
+[Worker  0] START  task  107 | kind: Cpu | skips:  0 | arrived: 2163ms
+[Worker  3] FINISH task  104 | kind: Cpu | arrived: 2102ms | wait: 1523ms | turnaround: 1723ms
+[Worker  3] START  task  112 | kind: Cpu | skips:  0 | arrived: 2263ms
+[Worker  6] FINISH task   97 | kind: Io | arrived: 1962ms | wait: 1670ms | turnaround: 1870ms
+[Worker  6] START  task  101 | kind: Io | skips:  4 | arrived: 2042ms
+[Worker  5] FINISH task  100 | kind: Io | arrived: 2022ms | wait: 1645ms | turnaround: 1845ms
+[Worker  5] START  task  102 | kind: Io | skips:  4 | arrived: 2062ms
+[Worker  0] FINISH task  107 | kind: Cpu | arrived: 2163ms | wait: 1583ms | turnaround: 1783ms
+[Worker  0] START  task  116 | kind: Cpu | skips:  0 | arrived: 2343ms
+[Worker  3] FINISH task  112 | kind: Cpu | arrived: 2263ms | wait: 1563ms | turnaround: 1763ms
+[Worker  1] START  task  118 | kind: Cpu | skips:  0 | arrived: 2384ms
+[Worker  6] FINISH task  101 | kind: Io | arrived: 2042ms | wait: 1790ms | turnaround: 1990ms
+[Worker  6] START  task  105 | kind: Io | skips:  4 | arrived: 2123ms
+[Worker  5] FINISH task  102 | kind: Io | arrived: 2062ms | wait: 1805ms | turnaround: 2005ms
+[Worker  5] START  task  106 | kind: Io | skips:  4 | arrived: 2143ms
+[Worker  0] FINISH task  116 | kind: Cpu | arrived: 2343ms | wait: 1602ms | turnaround: 1802ms
+[Worker  0] START  task  120 | kind: Cpu | skips:  0 | arrived: 2424ms
+[Worker  1] FINISH task  118 | kind: Cpu | arrived: 2384ms | wait: 1642ms | turnaround: 1843ms
+[Worker  1] START  task  122 | kind: Cpu | skips:  0 | arrived: 2464ms
+[Worker  6] FINISH task  105 | kind: Io | arrived: 2123ms | wait: 1909ms | turnaround: 2110ms
+[Worker  6] START  task  108 | kind: Io | skips:  5 | arrived: 2183ms
+[Worker  5] FINISH task  106 | kind: Io | arrived: 2143ms | wait: 1925ms | turnaround: 2125ms
+[Worker  5] START  task  109 | kind: Io | skips:  5 | arrived: 2203ms
+[Worker  0] FINISH task  120 | kind: Cpu | arrived: 2424ms | wait: 1722ms | turnaround: 1922ms
+[Worker  0] START  task  123 | kind: Cpu | skips:  0 | arrived: 2484ms
+[Worker  1] FINISH task  122 | kind: Cpu | arrived: 2464ms | wait: 1762ms | turnaround: 1963ms
+[Worker  1] START  task  125 | kind: Cpu | skips:  0 | arrived: 2524ms
+[Worker  6] FINISH task  108 | kind: Io | arrived: 2183ms | wait: 2049ms | turnaround: 2249ms
+[Worker  6] START  task  110 | kind: Io | skips:  7 | arrived: 2223ms
+[Worker  5] FINISH task  109 | kind: Io | arrived: 2203ms | wait: 2065ms | turnaround: 2265ms
+[Worker  5] START  task  111 | kind: Io | skips:  7 | arrived: 2243ms
+[Worker  0] FINISH task  123 | kind: Cpu | arrived: 2484ms | wait: 1862ms | turnaround: 2062ms
+[Worker  0] START  task  126 | kind: Cpu | skips:  0 | arrived: 2544ms
+[Worker  1] FINISH task  125 | kind: Cpu | arrived: 2524ms | wait: 1903ms | turnaround: 2103ms
+[Worker  1] START  task  131 | kind: Cpu | skips:  0 | arrived: 2645ms
+[Worker  6] FINISH task  110 | kind: Io | arrived: 2223ms | wait: 2209ms | turnaround: 2409ms
+[Worker  6] START  task  113 | kind: Io | skips:  8 | arrived: 2283ms
+[Worker  5] FINISH task  111 | kind: Io | arrived: 2243ms | wait: 2225ms | turnaround: 2425ms
+[Worker  5] START  task  114 | kind: Io | skips:  8 | arrived: 2303ms
+[Worker  0] FINISH task  126 | kind: Cpu | arrived: 2544ms | wait: 2002ms | turnaround: 2202ms
+[Worker  0] START  task  135 | kind: Cpu | skips:  0 | arrived: 2727ms
+[Worker  1] FINISH task  131 | kind: Cpu | arrived: 2645ms | wait: 1982ms | turnaround: 2182ms
+[Worker  1] START  task  146 | kind: Cpu | skips:  0 | arrived: 2948ms
+[Worker  6] FINISH task  113 | kind: Io | arrived: 2283ms | wait: 2349ms | turnaround: 2549ms
+[Worker  6] START  task  115 | kind: Io | skips: 10 | arrived: 2323ms
+[Worker  5] FINISH task  114 | kind: Io | arrived: 2303ms | wait: 2365ms | turnaround: 2565ms
+[Worker  5] START  task  117 | kind: Io | skips:  9 | arrived: 2364ms
+[Worker  0] FINISH task  135 | kind: Cpu | arrived: 2727ms | wait: 2019ms | turnaround: 2219ms
+[Worker  0] START  task  152 | kind: Cpu | skips:  0 | arrived: 3069ms
+[Worker  1] FINISH task  146 | kind: Cpu | arrived: 2948ms | wait: 1879ms | turnaround: 2080ms
+[Worker  1] START  task  163 | kind: Cpu | skips:  0 | arrived: 3290ms
+[Worker  6] FINISH task  115 | kind: Io | arrived: 2323ms | wait: 2509ms | turnaround: 2710ms
+[Worker  6] START  task  119 | kind: Io | skips: 10 | arrived: 2404ms
+[Worker  5] FINISH task  117 | kind: Io | arrived: 2364ms | wait: 2505ms | turnaround: 2705ms
+[Worker  5] START  task  121 | kind: Io | skips:  9 | arrived: 2444ms
+[Worker  0] FINISH task  152 | kind: Cpu | arrived: 3069ms | wait: 1878ms | turnaround: 2078ms
+[Worker  0] START  task  170 | kind: Cpu | skips:  0 | arrived: 3430ms
+[Worker  1] FINISH task  163 | kind: Cpu | arrived: 3290ms | wait: 1738ms | turnaround: 1940ms
+[Worker  1] START  task  176 | kind: Cpu | skips:  0 | arrived: 3552ms
+[Worker  6] FINISH task  119 | kind: Io | arrived: 2404ms | wait: 2629ms | turnaround: 2830ms
+[Worker  6] START  task  124 | kind: Io | skips:  9 | arrived: 2504ms
+[Worker  5] FINISH task  121 | kind: Io | arrived: 2444ms | wait: 2624ms | turnaround: 2825ms
+[Worker  5] START  task  127 | kind: Io | skips:  7 | arrived: 2564ms
+[Worker  0] FINISH task  170 | kind: Cpu | arrived: 3430ms | wait: 1717ms | turnaround: 1917ms
+[Worker  0] START  task  177 | kind: Cpu | skips:  0 | arrived: 3572ms
+[Worker  1] FINISH task  176 | kind: Cpu | arrived: 3552ms | wait: 1678ms | turnaround: 1878ms
+[Worker  1] START  task  180 | kind: Cpu | skips:  0 | arrived: 3633ms
+[Worker  6] FINISH task  124 | kind: Io | arrived: 2504ms | wait: 2729ms | turnaround: 2929ms
+[Worker  6] START  task  128 | kind: Io | skips:  9 | arrived: 2584ms
+[Worker  5] FINISH task  127 | kind: Io | arrived: 2564ms | wait: 2705ms | turnaround: 2905ms
+[Worker  5] START  task  129 | kind: Io | skips:  9 | arrived: 2605ms
+[Worker  0] FINISH task  177 | kind: Cpu | arrived: 3572ms | wait: 1777ms | turnaround: 1977ms
+[Worker  0] START  task  185 | kind: Cpu | skips:  0 | arrived: 3733ms
+[Worker  1] FINISH task  180 | kind: Cpu | arrived: 3633ms | wait: 1797ms | turnaround: 1998ms
+[Worker  1] START  task  186 | kind: Cpu | skips:  0 | arrived: 3753ms
+[Worker  6] FINISH task  128 | kind: Io | arrived: 2584ms | wait: 2849ms | turnaround: 3049ms
+[Worker  6] START  task  130 | kind: Io | skips: 11 | arrived: 2625ms
+[Worker  5] FINISH task  129 | kind: Io | arrived: 2605ms | wait: 2865ms | turnaround: 3065ms
+[Worker  5] START  task  132 | kind: Io | skips: 10 | arrived: 2667ms
+[Worker  0] FINISH task  185 | kind: Cpu | arrived: 3733ms | wait: 1816ms | turnaround: 2018ms
+[Worker  0] START  task  188 | kind: Cpu | skips:  0 | arrived: 3793ms
+[Worker  1] FINISH task  186 | kind: Cpu | arrived: 3753ms | wait: 1877ms | turnaround: 2077ms
+[Worker  1] START  task  192 | kind: Cpu | skips:  0 | arrived: 3874ms
+[Worker  6] FINISH task  130 | kind: Io | arrived: 2625ms | wait: 3009ms | turnaround: 3209ms
+[Worker  6] START  task  133 | kind: Io | skips: 12 | arrived: 2687ms
+[Worker  5] FINISH task  132 | kind: Io | arrived: 2667ms | wait: 3003ms | turnaround: 3203ms
+[Worker  5] START  task  134 | kind: Io | skips: 12 | arrived: 2707ms
+[Worker  0] FINISH task  188 | kind: Cpu | arrived: 3793ms | wait: 1957ms | turnaround: 2157ms
+[Worker  0] START  task  195 | kind: Cpu | skips:  0 | arrived: 3934ms
+[Worker  1] FINISH task  192 | kind: Cpu | arrived: 3874ms | wait: 1957ms | turnaround: 2157ms
+[Worker  4] START  task  197 | kind: Cpu | skips:  0 | arrived: 3974ms
+[Worker  6] FINISH task  133 | kind: Io | arrived: 2687ms | wait: 3147ms | turnaround: 3348ms
+[Worker  6] START  task  136 | kind: Io | skips: 13 | arrived: 2747ms
+[Worker  5] FINISH task  134 | kind: Io | arrived: 2707ms | wait: 3163ms | turnaround: 3363ms
+[Worker  5] START  task  137 | kind: Io | skips: 13 | arrived: 2768ms
+[Worker  0] FINISH task  195 | kind: Cpu | arrived: 3934ms | wait: 2017ms | turnaround: 2217ms
+[Worker  0] START  task  198 | kind: Cpu | skips:  0 | arrived: 3994ms
+[Worker  4] FINISH task  197 | kind: Cpu | arrived: 3974ms | wait: 2056ms | turnaround: 2256ms
+[Worker  4] START  task  199 | kind: Cpu | skips:  0 | arrived: 4014ms
+[Worker  6] FINISH task  136 | kind: Io | arrived: 2747ms | wait: 3287ms | turnaround: 3488ms
+[Worker  6] START  task  138 | kind: Io | skips: 15 | arrived: 2788ms
+[Worker  5] FINISH task  137 | kind: Io | arrived: 2768ms | wait: 3303ms | turnaround: 3503ms
+[Worker  5] START  task  139 | kind: Io | skips: 15 | arrived: 2808ms
+[Worker  0] FINISH task  198 | kind: Cpu | arrived: 3994ms | wait: 2157ms | turnaround: 2357ms
+[Worker  0] START  task  200 | kind: Cpu | skips:  0 | arrived: 4034ms
+[Worker  4] FINISH task  199 | kind: Cpu | arrived: 4014ms | wait: 2216ms | turnaround: 2417ms
+[Worker  4] START  task  201 | kind: Cpu | skips:  0 | arrived: 4055ms
+[Worker  6] FINISH task  138 | kind: Io | arrived: 2788ms | wait: 3448ms | turnaround: 3648ms
+[Worker  2] START  task  140 | kind: Io | skips: 17 | arrived: 2828ms
+[Worker  5] FINISH task  139 | kind: Io | arrived: 2808ms | wait: 3463ms | turnaround: 3663ms
+[Worker  5] START  task  141 | kind: Io | skips: 17 | arrived: 2848ms
+[Worker  0] FINISH task  200 | kind: Cpu | arrived: 4034ms | wait: 2317ms | turnaround: 2517ms
+[Worker  0] START  task  202 | kind: Cpu | skips:  0 | arrived: 4075ms
+[Worker  4] FINISH task  201 | kind: Cpu | arrived: 4055ms | wait: 2376ms | turnaround: 2577ms
+[Worker  4] START  task  206 | kind: Cpu | skips:  0 | arrived: 4155ms
+[Worker  2] FINISH task  140 | kind: Io | arrived: 2828ms | wait: 3608ms | turnaround: 3808ms
+[Worker  2] START  task  142 | kind: Io | skips: 19 | arrived: 2868ms
+[Worker  5] FINISH task  141 | kind: Io | arrived: 2848ms | wait: 3623ms | turnaround: 3823ms
+[Worker  5] START  task  143 | kind: Io | skips: 19 | arrived: 2888ms
+[Worker  0] FINISH task  202 | kind: Cpu | arrived: 4075ms | wait: 2477ms | turnaround: 2677ms
+[Worker  0] START  task  210 | kind: Cpu | skips:  0 | arrived: 4235ms
+[Worker  4] FINISH task  206 | kind: Cpu | arrived: 4155ms | wait: 2476ms | turnaround: 2676ms
+[Worker  4] START  task  144 | kind: Io | skips: 20 | arrived: 2908ms
+[Worker  7] START  task  145 | kind: Io | skips: 20 | arrived: 2928ms
+[Worker  3] START  task  147 | kind: Io | skips: 19 | arrived: 2968ms
+[Worker  6] START  task  148 | kind: Io | skips: 19 | arrived: 2988ms
+[Worker  2] FINISH task  142 | kind: Io | arrived: 2868ms | wait: 3768ms | turnaround: 3968ms
+[Worker  2] START  task  149 | kind: Io | skips: 19 | arrived: 3008ms
+[Worker  5] FINISH task  143 | kind: Io | arrived: 2888ms | wait: 3783ms | turnaround: 3983ms
+[Worker  5] START  task  150 | kind: Io | skips: 19 | arrived: 3029ms
+[Worker  0] FINISH task  210 | kind: Cpu | arrived: 4235ms | wait: 2517ms | turnaround: 2717ms
+[Worker  0] START  task  211 | kind: Cpu | skips:  0 | arrived: 4255ms
+[Worker  4] FINISH task  144 | kind: Io | arrived: 2908ms | wait: 3923ms | turnaround: 4123ms
+[Worker  7] FINISH task  145 | kind: Io | arrived: 2928ms | wait: 3903ms | turnaround: 4103ms
+[Worker  7] START  task  153 | kind: Io | skips: 19 | arrived: 3089ms
+[Worker  6] FINISH task  148 | kind: Io | arrived: 2988ms | wait: 3843ms | turnaround: 4043ms
+[Worker  6] START  task  154 | kind: Io | skips: 19 | arrived: 3109ms
+[Worker  3] FINISH task  147 | kind: Io | arrived: 2968ms | wait: 3863ms | turnaround: 4063ms
+[Worker  3] START  task  155 | kind: Io | skips: 19 | arrived: 3129ms
+[Worker  4] START  task  151 | kind: Io | skips: 20 | arrived: 3049ms
+[Worker  2] FINISH task  149 | kind: Io | arrived: 3008ms | wait: 3827ms | turnaround: 4027ms
+[Worker  2] START  task  156 | kind: Io | skips: 19 | arrived: 3149ms
+[Worker  5] FINISH task  150 | kind: Io | arrived: 3029ms | wait: 3842ms | turnaround: 4042ms
+[Worker  5] START  task  157 | kind: Io | skips: 19 | arrived: 3169ms
+[Worker  0] FINISH task  211 | kind: Cpu | arrived: 4255ms | wait: 2697ms | turnaround: 2897ms
+[Worker  0] START  task  216 | kind: Cpu | skips:  0 | arrived: 4356ms
+[Worker  7] FINISH task  153 | kind: Io | arrived: 3089ms | wait: 3943ms | turnaround: 4143ms
+[Worker  7] START  task  158 | kind: Io | skips: 20 | arrived: 3189ms
+[Worker  6] FINISH task  154 | kind: Io | arrived: 3109ms | wait: 3923ms | turnaround: 4123ms
+[Worker  6] START  task  159 | kind: Io | skips: 20 | arrived: 3209ms
+[Worker  3] FINISH task  155 | kind: Io | arrived: 3129ms | wait: 3903ms | turnaround: 4103ms
+[Worker  3] START  task  160 | kind: Io | skips: 20 | arrived: 3229ms
+[Worker  4] FINISH task  151 | kind: Io | arrived: 3049ms | wait: 3983ms | turnaround: 4184ms
+[Worker  1] START  task  161 | kind: Io | skips: 20 | arrived: 3249ms
+[Worker  2] FINISH task  156 | kind: Io | arrived: 3149ms | wait: 3887ms | turnaround: 4087ms
+[Worker  2] START  task  162 | kind: Io | skips: 20 | arrived: 3270ms
+[Worker  5] FINISH task  157 | kind: Io | arrived: 3169ms | wait: 3902ms | turnaround: 4102ms
+[Worker  5] START  task  164 | kind: Io | skips: 19 | arrived: 3310ms
+[Worker  0] FINISH task  216 | kind: Cpu | arrived: 4356ms | wait: 2797ms | turnaround: 2997ms
+[Worker  0] START  task  219 | kind: Cpu | skips:  0 | arrived: 4416ms
+[Worker  7] FINISH task  158 | kind: Io | arrived: 3189ms | wait: 4043ms | turnaround: 4243ms
+[Worker  7] START  task  165 | kind: Io | skips: 20 | arrived: 3330ms
+[Worker  6] FINISH task  159 | kind: Io | arrived: 3209ms | wait: 4023ms | turnaround: 4223ms
+[Worker  3] FINISH task  160 | kind: Io | arrived: 3229ms | wait: 4003ms | turnaround: 4203ms
+[Worker  3] START  task  167 | kind: Io | skips: 20 | arrived: 3370ms
+[Worker  6] START  task  166 | kind: Io | skips: 20 | arrived: 3350ms
+[Worker  1] FINISH task  161 | kind: Io | arrived: 3249ms | wait: 3983ms | turnaround: 4183ms
+[Worker  1] START  task  168 | kind: Io | skips: 20 | arrived: 3390ms
+[Worker  2] FINISH task  162 | kind: Io | arrived: 3270ms | wait: 3967ms | turnaround: 4167ms
+[Worker  2] START  task  169 | kind: Io | skips: 20 | arrived: 3410ms
+[Worker  5] FINISH task  164 | kind: Io | arrived: 3310ms | wait: 3962ms | turnaround: 4162ms
+[Worker  5] START  task  171 | kind: Io | skips: 19 | arrived: 3450ms
+[Worker  0] FINISH task  219 | kind: Cpu | arrived: 4416ms | wait: 2937ms | turnaround: 3137ms
+[Worker  0] START  task  220 | kind: Cpu | skips:  0 | arrived: 4436ms
+[Worker  7] FINISH task  165 | kind: Io | arrived: 3330ms | wait: 4102ms | turnaround: 4302ms
+[Worker  7] START  task  172 | kind: Io | skips: 20 | arrived: 3470ms
+[Worker  3] FINISH task  167 | kind: Io | arrived: 3370ms | wait: 4062ms | turnaround: 4263ms
+[Worker  3] START  task  173 | kind: Io | skips: 20 | arrived: 3490ms
+[Worker  6] FINISH task  166 | kind: Io | arrived: 3350ms | wait: 4082ms | turnaround: 4283ms
+[Worker  6] START  task  174 | kind: Io | skips: 20 | arrived: 3512ms
+[Worker  1] FINISH task  168 | kind: Io | arrived: 3390ms | wait: 4043ms | turnaround: 4243ms
+[Worker  1] START  task  175 | kind: Io | skips: 20 | arrived: 3532ms
+[Worker  2] FINISH task  169 | kind: Io | arrived: 3410ms | wait: 4026ms | turnaround: 4226ms
+[Worker  2] START  task  178 | kind: Io | skips: 18 | arrived: 3592ms
+[Worker  5] FINISH task  171 | kind: Io | arrived: 3450ms | wait: 4021ms | turnaround: 4221ms
+[Worker  5] START  task  179 | kind: Io | skips: 18 | arrived: 3613ms
+[Worker  0] FINISH task  220 | kind: Cpu | arrived: 4436ms | wait: 3117ms | turnaround: 3317ms
+[Worker  0] START  task  221 | kind: Cpu | skips:  0 | arrived: 4456ms
+[Worker  7] FINISH task  172 | kind: Io | arrived: 3470ms | wait: 4162ms | turnaround: 4362ms
+[Worker  7] START  task  181 | kind: Io | skips: 18 | arrived: 3653ms
+[Worker  3] FINISH task  173 | kind: Io | arrived: 3490ms | wait: 4142ms | turnaround: 4342ms
+[Worker  3] START  task  182 | kind: Io | skips: 18 | arrived: 3673ms
+[Worker  6] FINISH task  174 | kind: Io | arrived: 3512ms | wait: 4121ms | turnaround: 4321ms
+[Worker  4] START  task  183 | kind: Io | skips: 18 | arrived: 3693ms
+[Worker  1] FINISH task  175 | kind: Io | arrived: 3532ms | wait: 4101ms | turnaround: 4301ms
+[Worker  1] START  task  184 | kind: Io | skips: 18 | arrived: 3713ms
+[Worker  2] FINISH task  178 | kind: Io | arrived: 3592ms | wait: 4044ms | turnaround: 4244ms
+[Worker  2] START  task  187 | kind: Io | skips: 16 | arrived: 3773ms
+[Worker  5] FINISH task  179 | kind: Io | arrived: 3613ms | wait: 4059ms | turnaround: 4259ms
+[Worker  5] START  task  189 | kind: Io | skips: 15 | arrived: 3813ms
+[Worker  0] FINISH task  221 | kind: Cpu | arrived: 4456ms | wait: 3297ms | turnaround: 3498ms
+[Worker  0] START  task  227 | kind: Cpu | skips:  0 | arrived: 4577ms
+[Worker  7] FINISH task  181 | kind: Io | arrived: 3653ms | wait: 4180ms | turnaround: 4380ms
+[Worker  7] START  task  190 | kind: Io | skips: 16 | arrived: 3833ms
+[Worker  3] FINISH task  182 | kind: Io | arrived: 3673ms | wait: 4160ms | turnaround: 4360ms
+[Worker  3] START  task  191 | kind: Io | skips: 16 | arrived: 3854ms
+[Worker  4] FINISH task  183 | kind: Io | arrived: 3693ms | wait: 4140ms | turnaround: 4340ms
+[Worker  4] START  task  193 | kind: Io | skips: 15 | arrived: 3894ms
+[Worker  1] FINISH task  184 | kind: Io | arrived: 3713ms | wait: 4120ms | turnaround: 4320ms
+[Worker  1] START  task  194 | kind: Io | skips: 15 | arrived: 3914ms
+[Worker  2] FINISH task  187 | kind: Io | arrived: 3773ms | wait: 4063ms | turnaround: 4264ms
+[Worker  2] START  task  196 | kind: Io | skips: 14 | arrived: 3954ms
+[Worker  5] FINISH task  189 | kind: Io | arrived: 3813ms | wait: 4058ms | turnaround: 4259ms
+[Worker  5] START  task  203 | kind: Io | skips:  8 | arrived: 4095ms
+[Worker  0] FINISH task  227 | kind: Cpu | arrived: 4577ms | wait: 3377ms | turnaround: 3577ms
+[Worker  0] START  task  228 | kind: Cpu | skips:  0 | arrived: 4597ms
+[Worker  7] FINISH task  190 | kind: Io | arrived: 3833ms | wait: 4199ms | turnaround: 4399ms
+[Worker  7] START  task  204 | kind: Io | skips:  9 | arrived: 4115ms
+[Worker  3] FINISH task  191 | kind: Io | arrived: 3854ms | wait: 4179ms | turnaround: 4380ms
+[Worker  6] START  task  205 | kind: Io | skips:  9 | arrived: 4135ms
+[Worker  4] FINISH task  193 | kind: Io | arrived: 3894ms | wait: 4139ms | turnaround: 4340ms
+[Worker  4] START  task  207 | kind: Io | skips:  8 | arrived: 4175ms
+[Worker  1] FINISH task  194 | kind: Io | arrived: 3914ms | wait: 4119ms | turnaround: 4320ms
+[Worker  3] START  task  208 | kind: Io | skips:  8 | arrived: 4195ms
+[Worker  2] FINISH task  196 | kind: Io | arrived: 3954ms | wait: 4083ms | turnaround: 4283ms
+[Worker  2] START  task  209 | kind: Io | skips:  8 | arrived: 4215ms
+[Worker  5] FINISH task  203 | kind: Io | arrived: 4095ms | wait: 3977ms | turnaround: 4177ms
+[Worker  5] START  task  212 | kind: Io | skips:  6 | arrived: 4276ms
+[Worker  0] FINISH task  228 | kind: Cpu | arrived: 4597ms | wait: 3557ms | turnaround: 3757ms
+[Worker  0] START  task  229 | kind: Cpu | skips:  0 | arrived: 4617ms
+[Worker  7] FINISH task  204 | kind: Io | arrived: 4115ms | wait: 4118ms | turnaround: 4318ms
+[Worker  7] START  task  213 | kind: Io | skips:  7 | arrived: 4296ms
+[Worker  6] FINISH task  205 | kind: Io | arrived: 4135ms | wait: 4098ms | turnaround: 4298ms
+[Worker  6] START  task  214 | kind: Io | skips:  7 | arrived: 4316ms
+[Worker  4] FINISH task  207 | kind: Io | arrived: 4175ms | wait: 4058ms | turnaround: 4258ms
+[Worker  4] START  task  215 | kind: Io | skips:  7 | arrived: 4336ms
+[Worker  3] FINISH task  208 | kind: Io | arrived: 4195ms | wait: 4038ms | turnaround: 4239ms
+[Worker  3] START  task  217 | kind: Io | skips:  6 | arrived: 4376ms
+[Worker  2] FINISH task  209 | kind: Io | arrived: 4215ms | wait: 4022ms | turnaround: 4222ms
+[Worker  2] START  task  218 | kind: Io | skips:  6 | arrived: 4396ms
+[Worker  5] FINISH task  212 | kind: Io | arrived: 4276ms | wait: 3997ms | turnaround: 4197ms
+[Worker  5] START  task  222 | kind: Io | skips:  3 | arrived: 4476ms
+[Worker  0] FINISH task  229 | kind: Cpu | arrived: 4617ms | wait: 3737ms | turnaround: 3937ms
+[Worker  0] START  task  234 | kind: Cpu | skips:  0 | arrived: 4718ms
+[Worker  7] FINISH task  213 | kind: Io | arrived: 4296ms | wait: 4138ms | turnaround: 4338ms
+[Worker  7] START  task  223 | kind: Io | skips:  4 | arrived: 4497ms
+[Worker  6] FINISH task  214 | kind: Io | arrived: 4316ms | wait: 4118ms | turnaround: 4318ms
+[Worker  6] START  task  224 | kind: Io | skips:  4 | arrived: 4517ms
+[Worker  4] FINISH task  215 | kind: Io | arrived: 4336ms | wait: 4098ms | turnaround: 4298ms
+[Worker  4] START  task  225 | kind: Io | skips:  4 | arrived: 4537ms
+[Worker  3] FINISH task  217 | kind: Io | arrived: 4376ms | wait: 4058ms | turnaround: 4259ms
+[Worker  3] START  task  226 | kind: Io | skips:  4 | arrived: 4557ms
+[Worker  2] FINISH task  218 | kind: Io | arrived: 4396ms | wait: 4041ms | turnaround: 4241ms
+[Worker  2] START  task  230 | kind: Io | skips:  1 | arrived: 4637ms
+[Worker  5] FINISH task  222 | kind: Io | arrived: 4476ms | wait: 3996ms | turnaround: 4196ms
+[Worker  5] START  task  231 | kind: Io | skips:  1 | arrived: 4657ms
+[Worker  0] FINISH task  234 | kind: Cpu | arrived: 4718ms | wait: 3836ms | turnaround: 4037ms
+[Worker  0] START  task  246 | kind: Cpu | skips:  0 | arrived: 4959ms
+[Worker  6] FINISH task  224 | kind: Io | arrived: 4517ms | wait: 4117ms | turnaround: 4317ms
+[Worker  6] START  task  232 | kind: Io | skips:  2 | arrived: 4677ms
+[Worker  7] FINISH task  223 | kind: Io | arrived: 4497ms | wait: 4137ms | turnaround: 4337ms
+[Worker  7] START  task  233 | kind: Io | skips:  2 | arrived: 4698ms
+[Worker  4] FINISH task  225 | kind: Io | arrived: 4537ms | wait: 4097ms | turnaround: 4298ms
+[Worker  4] START  task  235 | kind: Io | skips:  1 | arrived: 4738ms
+[Worker  3] FINISH task  226 | kind: Io | arrived: 4557ms | wait: 4078ms | turnaround: 4278ms
+[Worker  3] START  task  236 | kind: Io | skips:  1 | arrived: 4759ms
+[Worker  2] FINISH task  230 | kind: Io | arrived: 4637ms | wait: 4000ms | turnaround: 4202ms
+[Worker  1] START  task  237 | kind: Io | skips:  1 | arrived: 4779ms
+[Worker  5] FINISH task  231 | kind: Io | arrived: 4657ms | wait: 4015ms | turnaround: 4218ms
+[Worker  5] START  task  238 | kind: Io | skips:  1 | arrived: 4799ms
+[Worker  0] FINISH task  246 | kind: Cpu | arrived: 4959ms | wait: 3796ms | turnaround: 3996ms
+[Worker  0] START  task  251 | kind: Cpu | skips:  0 | arrived: 5065ms
+[Worker  6] FINISH task  232 | kind: Io | arrived: 4677ms | wait: 4156ms | turnaround: 4357ms
+[Worker  6] START  task  239 | kind: Io | skips:  2 | arrived: 4819ms
+[Worker  7] FINISH task  233 | kind: Io | arrived: 4698ms | wait: 4137ms | turnaround: 4337ms
+[Worker  7] START  task  240 | kind: Io | skips:  2 | arrived: 4839ms
+[Worker  4] FINISH task  235 | kind: Io | arrived: 4738ms | wait: 4097ms | turnaround: 4297ms
+[Worker  2] START  task  241 | kind: Io | skips:  2 | arrived: 4859ms
+[Worker  3] FINISH task  236 | kind: Io | arrived: 4759ms | wait: 4077ms | turnaround: 4277ms
+[Worker  3] START  task  242 | kind: Io | skips:  2 | arrived: 4879ms
+[Worker  1] FINISH task  237 | kind: Io | arrived: 4779ms | wait: 4061ms | turnaround: 4262ms
+[Worker  1] START  task  243 | kind: Io | skips:  2 | arrived: 4899ms
+[Worker  5] FINISH task  238 | kind: Io | arrived: 4799ms | wait: 4077ms | turnaround: 4278ms
+[Worker  5] START  task  244 | kind: Io | skips:  2 | arrived: 4919ms
+[Worker  0] FINISH task  251 | kind: Cpu | arrived: 5065ms | wait: 3891ms | turnaround: 4091ms
+[Worker  0] START  task  254 | kind: Cpu | skips:  0 | arrived: 5125ms
+[Worker  6] FINISH task  239 | kind: Io | arrived: 4819ms | wait: 4215ms | turnaround: 4416ms
+[Worker  6] START  task  245 | kind: Io | skips:  3 | arrived: 4939ms
+[Worker  7] FINISH task  240 | kind: Io | arrived: 4839ms | wait: 4196ms | turnaround: 4396ms
+[Worker  7] START  task  247 | kind: Io | skips:  2 | arrived: 4979ms
+[Worker  3] FINISH task  242 | kind: Io | arrived: 4879ms | wait: 4156ms | turnaround: 4356ms
+[Worker  3] START  task  248 | kind: Io | skips:  2 | arrived: 4999ms
+[Worker  2] FINISH task  241 | kind: Io | arrived: 4859ms | wait: 4176ms | turnaround: 4377ms
+[Worker  2] START  task  249 | kind: Io | skips:  2 | arrived: 5023ms
+[Worker  1] FINISH task  243 | kind: Io | arrived: 4899ms | wait: 4141ms | turnaround: 4341ms
+[Worker  1] START  task  250 | kind: Io | skips:  2 | arrived: 5044ms
+[Worker  5] FINISH task  244 | kind: Io | arrived: 4919ms | wait: 4158ms | turnaround: 4358ms
+[Worker  5] START  task  252 | kind: Io | skips:  1 | arrived: 5085ms
+[Worker  0] FINISH task  254 | kind: Cpu | arrived: 5125ms | wait: 4031ms | turnaround: 4231ms
+[Worker  0] START  task  255 | kind: Cpu | skips:  0 | arrived: 5145ms
+[Worker  6] FINISH task  245 | kind: Io | arrived: 4939ms | wait: 4295ms | turnaround: 4495ms
+[Worker  6] START  task  253 | kind: Io | skips:  2 | arrived: 5105ms
+[Worker  7] FINISH task  247 | kind: Io | arrived: 4979ms | wait: 4256ms | turnaround: 4456ms
+[Worker  7] START  task  256 | kind: Io | skips:  0 | arrived: 5165ms
+[Worker  3] FINISH task  248 | kind: Io | arrived: 4999ms | wait: 4236ms | turnaround: 4436ms
+[Worker  3] START  task  257 | kind: Io | skips:  0 | arrived: 5185ms
+[Worker  2] FINISH task  249 | kind: Io | arrived: 5023ms | wait: 4213ms | turnaround: 4413ms
+[Worker  2] START  task  258 | kind: Io | skips:  0 | arrived: 5205ms
+[Worker  1] FINISH task  250 | kind: Io | arrived: 5044ms | wait: 4196ms | turnaround: 4396ms
+[Worker  1] START  task  259 | kind: Io | skips:  0 | arrived: 5225ms
+[Worker  5] FINISH task  252 | kind: Io | arrived: 5085ms | wait: 4192ms | turnaround: 4392ms
+[Worker  5] START  task  260 | kind: Io | skips:  0 | arrived: 5245ms
+[Worker  0] FINISH task  255 | kind: Cpu | arrived: 5145ms | wait: 4211ms | turnaround: 4411ms
+[Worker  0] START  task  261 | kind: Cpu | skips:  0 | arrived: 5266ms
+[Worker  6] FINISH task  253 | kind: Io | arrived: 5105ms | wait: 4330ms | turnaround: 4530ms
+[Worker  6] START  task  263 | kind: Io | skips:  0 | arrived: 5306ms
+[Worker  7] FINISH task  256 | kind: Io | arrived: 5165ms | wait: 4270ms | turnaround: 4471ms
+[Worker  7] START  task  264 | kind: Io | skips:  0 | arrived: 5326ms
+[Worker  3] FINISH task  257 | kind: Io | arrived: 5185ms | wait: 4251ms | turnaround: 4451ms
+[Worker  4] START  task  265 | kind: Io | skips:  0 | arrived: 5346ms
+[Worker  2] FINISH task  258 | kind: Io | arrived: 5205ms | wait: 4231ms | turnaround: 4431ms
+[Worker  2] START  task  266 | kind: Io | skips:  0 | arrived: 5366ms
+[Worker  1] FINISH task  259 | kind: Io | arrived: 5225ms | wait: 4215ms | turnaround: 4415ms
+[Worker  1] START  task  267 | kind: Io | skips:  0 | arrived: 5386ms
+[Worker  5] FINISH task  260 | kind: Io | arrived: 5245ms | wait: 4232ms | turnaround: 4432ms
+[Worker  5] START  task  269 | kind: Io | skips:  0 | arrived: 5426ms
+[Worker  0] FINISH task  261 | kind: Cpu | arrived: 5266ms | wait: 4291ms | turnaround: 4491ms
+[Worker  0] START  task  262 | kind: Cpu | skips:  6 | arrived: 5286ms
+[Worker  6] FINISH task  263 | kind: Io | arrived: 5306ms | wait: 4329ms | turnaround: 4529ms
+[Worker  6] START  task  271 | kind: Io | skips:  0 | arrived: 5466ms
+[Worker  7] FINISH task  264 | kind: Io | arrived: 5326ms | wait: 4310ms | turnaround: 4510ms
+[Worker  7] START  task  272 | kind: Io | skips:  0 | arrived: 5487ms
+[Worker  4] FINISH task  265 | kind: Io | arrived: 5346ms | wait: 4290ms | turnaround: 4490ms
+[Worker  4] START  task  275 | kind: Io | skips:  0 | arrived: 5547ms
+[Worker  2] FINISH task  266 | kind: Io | arrived: 5366ms | wait: 4270ms | turnaround: 4470ms
+[Worker  2] START  task  277 | kind: Io | skips:  0 | arrived: 5588ms
+[Worker  1] FINISH task  267 | kind: Io | arrived: 5386ms | wait: 4255ms | turnaround: 4455ms
+[Worker  1] START  task  278 | kind: Io | skips:  0 | arrived: 5608ms
+[Worker  5] FINISH task  269 | kind: Io | arrived: 5426ms | wait: 4251ms | turnaround: 4451ms
+[Worker  5] START  task  281 | kind: Io | skips:  0 | arrived: 5668ms
+[Worker  0] FINISH task  262 | kind: Cpu | arrived: 5286ms | wait: 4471ms | turnaround: 4671ms
+[Worker  0] START  task  268 | kind: Cpu | skips:  7 | arrived: 5406ms
+[Worker  6] FINISH task  271 | kind: Io | arrived: 5466ms | wait: 4369ms | turnaround: 4569ms
+[Worker  6] START  task  282 | kind: Io | skips:  0 | arrived: 5688ms
+[Worker  7] FINISH task  272 | kind: Io | arrived: 5487ms | wait: 4349ms | turnaround: 4549ms
+[Worker  7] START  task  283 | kind: Io | skips:  0 | arrived: 5708ms
+[Worker  4] FINISH task  275 | kind: Io | arrived: 5547ms | wait: 4289ms | turnaround: 4489ms
+[Worker  4] START  task  284 | kind: Io | skips:  0 | arrived: 5729ms
+[Worker  2] FINISH task  277 | kind: Io | arrived: 5588ms | wait: 4249ms | turnaround: 4449ms
+[Worker  2] START  task  285 | kind: Io | skips:  0 | arrived: 5749ms
+[Worker  1] FINISH task  278 | kind: Io | arrived: 5608ms | wait: 4233ms | turnaround: 4433ms
+[Worker  1] START  task  286 | kind: Io | skips:  0 | arrived: 5769ms
+[Worker  5] FINISH task  281 | kind: Io | arrived: 5668ms | wait: 4210ms | turnaround: 4410ms
+[Worker  5] START  task  287 | kind: Io | skips:  0 | arrived: 5789ms
+[Worker  0] FINISH task  268 | kind: Cpu | arrived: 5406ms | wait: 4550ms | turnaround: 4750ms
+[Worker  0] START  task  270 | kind: Cpu | skips: 12 | arrived: 5446ms
+[Worker  6] FINISH task  282 | kind: Io | arrived: 5688ms | wait: 4348ms | turnaround: 4548ms
+[Worker  3] START  task  290 | kind: Io | skips:  0 | arrived: 5850ms
+[Worker  7] FINISH task  283 | kind: Io | arrived: 5708ms | wait: 4328ms | turnaround: 4528ms
+[Worker  6] START  task  292 | kind: Io | skips:  0 | arrived: 5890ms
+[Worker  4] FINISH task  284 | kind: Io | arrived: 5729ms | wait: 4307ms | turnaround: 4507ms
+[Worker  4] START  task  294 | kind: Io | skips:  0 | arrived: 5930ms
+[Worker  2] FINISH task  285 | kind: Io | arrived: 5749ms | wait: 4287ms | turnaround: 4487ms
+[Worker  2] START  task  295 | kind: Io | skips:  0 | arrived: 5950ms
+[Worker  1] FINISH task  286 | kind: Io | arrived: 5769ms | wait: 4272ms | turnaround: 4472ms
+[Worker  7] START  task  296 | kind: Io | skips:  0 | arrived: 5970ms
+[Worker  5] FINISH task  287 | kind: Io | arrived: 5789ms | wait: 4288ms | turnaround: 4488ms
+[Worker  5] START  task  297 | kind: Io | skips:  0 | arrived: 5990ms
+[Worker  0] FINISH task  270 | kind: Cpu | arrived: 5446ms | wait: 4710ms | turnaround: 4910ms
+[Worker  0] START  task  273 | kind: Cpu | skips: 16 | arrived: 5507ms
+[Worker  3] FINISH task  290 | kind: Io | arrived: 5850ms | wait: 4386ms | turnaround: 4586ms
+[Worker  3] START  task  300 | kind: Io | skips:  0 | arrived: 6051ms
+[Worker  6] FINISH task  292 | kind: Io | arrived: 5890ms | wait: 4346ms | turnaround: 4547ms
+[Worker  6] START  task  301 | kind: Io | skips:  0 | arrived: 6071ms
+[Worker  4] FINISH task  294 | kind: Io | arrived: 5930ms | wait: 4307ms | turnaround: 4507ms
+[Worker  1] START  task  303 | kind: Io | skips:  0 | arrived: 6111ms
+[Worker  2] FINISH task  295 | kind: Io | arrived: 5950ms | wait: 4287ms | turnaround: 4487ms
+[Worker  2] START  task  305 | kind: Io | skips:  0 | arrived: 6151ms
+[Worker  7] FINISH task  296 | kind: Io | arrived: 5970ms | wait: 4271ms | turnaround: 4471ms
+[Worker  5] FINISH task  297 | kind: Io | arrived: 5990ms | wait: 4288ms | turnaround: 4488ms
+[Worker  0] FINISH task  273 | kind: Cpu | arrived: 5507ms | wait: 4850ms | turnaround: 5050ms
+[Worker  0] START  task  274 | kind: Cpu | skips: 20 | arrived: 5527ms
+[Worker  4] START  task  306 | kind: Io | skips:  0 | arrived: 6172ms
+[Worker  3] FINISH task  300 | kind: Io | arrived: 6051ms | wait: 4385ms | turnaround: 4585ms
+[Worker  6] FINISH task  301 | kind: Io | arrived: 6071ms | wait: 4365ms | turnaround: 4565ms
+[Worker  6] START  task  276 | kind: Cpu | skips: 20 | arrived: 5568ms
+[Worker  1] FINISH task  303 | kind: Io | arrived: 6111ms | wait: 4326ms | turnaround: 4526ms
+[Worker  2] FINISH task  305 | kind: Io | arrived: 6151ms | wait: 4286ms | turnaround: 4486ms
+[Worker  2] START  task  309 | kind: Io | skips:  0 | arrived: 6232ms
+[Worker  0] FINISH task  274 | kind: Cpu | arrived: 5527ms | wait: 5030ms | turnaround: 5230ms
+[Worker  0] START  task  279 | kind: Cpu | skips: 19 | arrived: 5628ms
+[Worker  4] FINISH task  306 | kind: Io | arrived: 6172ms | wait: 4386ms | turnaround: 4586ms
+[Worker  4] START  task  310 | kind: Io | skips:  0 | arrived: 6252ms
+[Worker  6] FINISH task  276 | kind: Cpu | arrived: 5568ms | wait: 5069ms | turnaround: 5269ms
+[Worker  6] START  task  280 | kind: Cpu | skips: 20 | arrived: 5648ms
+[Worker  2] FINISH task  309 | kind: Io | arrived: 6232ms | wait: 4405ms | turnaround: 4606ms
+[Worker  2] START  task  311 | kind: Io | skips:  0 | arrived: 6272ms
+[Worker  0] FINISH task  279 | kind: Cpu | arrived: 5628ms | wait: 5129ms | turnaround: 5329ms
+[Worker  0] START  task  288 | kind: Cpu | skips: 14 | arrived: 5809ms
+[Worker  4] FINISH task  310 | kind: Io | arrived: 6252ms | wait: 4505ms | turnaround: 4706ms
+[Worker  3] START  task  314 | kind: Io | skips:  0 | arrived: 6332ms
+[Worker  6] FINISH task  280 | kind: Cpu | arrived: 5648ms | wait: 5189ms | turnaround: 5389ms
+[Worker  6] START  task  289 | kind: Cpu | skips: 15 | arrived: 5830ms
+[Worker  2] FINISH task  311 | kind: Io | arrived: 6272ms | wait: 4565ms | turnaround: 4766ms
+[Worker  2] START  task  315 | kind: Io | skips:  0 | arrived: 6352ms
+[Worker  0] FINISH task  288 | kind: Cpu | arrived: 5809ms | wait: 5148ms | turnaround: 5348ms
+[Worker  0] START  task  291 | kind: Cpu | skips: 15 | arrived: 5870ms
+[Worker  3] FINISH task  314 | kind: Io | arrived: 6332ms | wait: 4625ms | turnaround: 4825ms
+[Worker  3] START  task  316 | kind: Io | skips:  0 | arrived: 6372ms
+[Worker  6] FINISH task  289 | kind: Cpu | arrived: 5830ms | wait: 5207ms | turnaround: 5407ms
+[Worker  6] START  task  293 | kind: Cpu | skips: 15 | arrived: 5910ms
+[Worker  2] FINISH task  315 | kind: Io | arrived: 6352ms | wait: 4685ms | turnaround: 4885ms
+[Worker  2] START  task  318 | kind: Io | skips:  0 | arrived: 6413ms
+[Worker  0] FINISH task  291 | kind: Cpu | arrived: 5870ms | wait: 5288ms | turnaround: 5488ms
+[Worker  0] START  task  298 | kind: Cpu | skips: 12 | arrived: 6011ms
+[Worker  3] FINISH task  316 | kind: Io | arrived: 6372ms | wait: 4785ms | turnaround: 4985ms
+[Worker  3] START  task  319 | kind: Io | skips:  0 | arrived: 6433ms
+[Worker  6] FINISH task  293 | kind: Cpu | arrived: 5910ms | wait: 5327ms | turnaround: 5528ms
+[Worker  6] START  task  299 | kind: Cpu | skips: 13 | arrived: 6031ms
+[Worker  2] FINISH task  318 | kind: Io | arrived: 6413ms | wait: 4825ms | turnaround: 5025ms
+[Worker  2] START  task  320 | kind: Io | skips:  0 | arrived: 6453ms
+[Worker  0] FINISH task  298 | kind: Cpu | arrived: 6011ms | wait: 5347ms | turnaround: 5547ms
+[Worker  0] START  task  302 | kind: Cpu | skips: 12 | arrived: 6091ms
+[Worker  3] FINISH task  319 | kind: Io | arrived: 6433ms | wait: 4925ms | turnaround: 5125ms
+[Worker  3] START  task  322 | kind: Io | skips:  0 | arrived: 6493ms
+[Worker  6] FINISH task  299 | kind: Cpu | arrived: 6031ms | wait: 5407ms | turnaround: 5607ms
+[Worker  6] START  task  304 | kind: Cpu | skips: 12 | arrived: 6131ms
+[Worker  2] FINISH task  320 | kind: Io | arrived: 6453ms | wait: 4985ms | turnaround: 5185ms
+[Worker  1] START  task  323 | kind: Io | skips:  0 | arrived: 6513ms
+[Worker  0] FINISH task  302 | kind: Cpu | arrived: 6091ms | wait: 5467ms | turnaround: 5667ms
+[Worker  0] START  task  307 | kind: Cpu | skips: 11 | arrived: 6192ms
+[Worker  3] FINISH task  322 | kind: Io | arrived: 6493ms | wait: 5065ms | turnaround: 5265ms
+[Worker  3] START  task  324 | kind: Io | skips:  0 | arrived: 6533ms
+[Worker  6] FINISH task  304 | kind: Cpu | arrived: 6131ms | wait: 5507ms | turnaround: 5707ms
+[Worker  6] START  task  308 | kind: Cpu | skips: 12 | arrived: 6212ms
+[Worker  1] FINISH task  323 | kind: Io | arrived: 6513ms | wait: 5125ms | turnaround: 5325ms
+[Worker  1] START  task  325 | kind: Io | skips:  0 | arrived: 6553ms
+[Worker  0] FINISH task  307 | kind: Cpu | arrived: 6192ms | wait: 5566ms | turnaround: 5766ms
+[Worker  0] START  task  312 | kind: Cpu | skips: 10 | arrived: 6292ms
+[Worker  3] FINISH task  324 | kind: Io | arrived: 6533ms | wait: 5225ms | turnaround: 5425ms
+[Worker  3] START  task  326 | kind: Io | skips:  0 | arrived: 6573ms
+[Worker  6] FINISH task  308 | kind: Cpu | arrived: 6212ms | wait: 5626ms | turnaround: 5826ms
+[Worker  6] START  task  313 | kind: Cpu | skips: 11 | arrived: 6312ms
+[Worker  1] FINISH task  325 | kind: Io | arrived: 6553ms | wait: 5285ms | turnaround: 5485ms
+[Worker  1] START  task  327 | kind: Io | skips:  0 | arrived: 6593ms
+[Worker  0] FINISH task  312 | kind: Cpu | arrived: 6292ms | wait: 5666ms | turnaround: 5866ms
+[Worker  0] START  task  317 | kind: Cpu | skips:  9 | arrived: 6392ms
+[Worker  3] FINISH task  326 | kind: Io | arrived: 6573ms | wait: 5385ms | turnaround: 5585ms
+[Worker  3] START  task  328 | kind: Io | skips:  0 | arrived: 6613ms
+[Worker  6] FINISH task  313 | kind: Cpu | arrived: 6312ms | wait: 5726ms | turnaround: 5926ms
+[Worker  5] START  task  321 | kind: Cpu | skips:  7 | arrived: 6473ms
+[Worker  1] FINISH task  327 | kind: Io | arrived: 6593ms | wait: 5445ms | turnaround: 5645ms
+[Worker  1] START  task  329 | kind: Io | skips:  0 | arrived: 6633ms
+[Worker  0] FINISH task  317 | kind: Cpu | arrived: 6392ms | wait: 5766ms | turnaround: 5966ms
+[Worker  6] START  task  332 | kind: Cpu | skips:  0 | arrived: 6694ms
+[Worker  3] FINISH task  328 | kind: Io | arrived: 6613ms | wait: 5545ms | turnaround: 5745ms
+[Worker  3] START  task  330 | kind: Io | skips:  1 | arrived: 6654ms
+[Worker  5] FINISH task  321 | kind: Cpu | arrived: 6473ms | wait: 5766ms | turnaround: 5968ms
+[Worker  5] START  task  336 | kind: Cpu | skips:  0 | arrived: 6775ms
+[Worker  1] FINISH task  329 | kind: Io | arrived: 6633ms | wait: 5605ms | turnaround: 5807ms
+[Worker  1] START  task  331 | kind: Io | skips:  2 | arrived: 6674ms
+[Worker  6] FINISH task  332 | kind: Cpu | arrived: 6694ms | wait: 5665ms | turnaround: 5865ms
+[Worker  6] START  task  337 | kind: Cpu | skips:  0 | arrived: 6795ms
+[Worker  3] FINISH task  330 | kind: Io | arrived: 6654ms | wait: 5705ms | turnaround: 5905ms
+[Worker  3] START  task  333 | kind: Io | skips:  2 | arrived: 6714ms
+[Worker  1] FINISH task  331 | kind: Io | arrived: 6674ms | wait: 5767ms | turnaround: 5967ms
+[Worker  1] START  task  334 | kind: Io | skips:  2 | arrived: 6734ms
+[Worker  5] FINISH task  336 | kind: Cpu | arrived: 6775ms | wait: 5666ms | turnaround: 5866ms
+[Worker  5] START  task  338 | kind: Cpu | skips:  0 | arrived: 6815ms
+[Worker  6] FINISH task  337 | kind: Cpu | arrived: 6795ms | wait: 5764ms | turnaround: 5964ms
+[Worker  6] START  task  339 | kind: Cpu | skips:  0 | arrived: 6835ms
+[Worker  3] FINISH task  333 | kind: Io | arrived: 6714ms | wait: 5845ms | turnaround: 6045ms
+[Worker  3] START  task  335 | kind: Io | skips:  4 | arrived: 6755ms
+[Worker  1] FINISH task  334 | kind: Io | arrived: 6734ms | wait: 5907ms | turnaround: 6107ms
+[Worker  1] START  task  342 | kind: Io | skips:  0 | arrived: 6895ms
+[Worker  5] FINISH task  338 | kind: Cpu | arrived: 6815ms | wait: 5826ms | turnaround: 6026ms
+[Worker  5] START  task  340 | kind: Cpu | skips:  1 | arrived: 6855ms
+[Worker  6] FINISH task  339 | kind: Cpu | arrived: 6835ms | wait: 5924ms | turnaround: 6124ms
+[Worker  6] START  task  341 | kind: Cpu | skips:  1 | arrived: 6875ms
+[Worker  3] FINISH task  335 | kind: Io | arrived: 6755ms | wait: 6004ms | turnaround: 6205ms
+[Worker  3] START  task  343 | kind: Io | skips:  0 | arrived: 6915ms
+[Worker  1] FINISH task  342 | kind: Io | arrived: 6895ms | wait: 5946ms | turnaround: 6146ms
+[Worker  4] START  task  345 | kind: Io | skips:  0 | arrived: 6955ms
+[Worker  5] FINISH task  340 | kind: Cpu | arrived: 6855ms | wait: 5986ms | turnaround: 6186ms
+[Worker  5] START  task  344 | kind: Cpu | skips:  1 | arrived: 6935ms
+[Worker  6] FINISH task  341 | kind: Cpu | arrived: 6875ms | wait: 6084ms | turnaround: 6284ms
+[Worker  0] START  task  354 | kind: Cpu | skips:  0 | arrived: 7136ms
+[Worker  3] FINISH task  343 | kind: Io | arrived: 6915ms | wait: 6044ms | turnaround: 6244ms
+[Worker  3] START  task  346 | kind: Io | skips:  1 | arrived: 6975ms
+[Worker  4] FINISH task  345 | kind: Io | arrived: 6955ms | wait: 6086ms | turnaround: 6286ms
+[Worker  4] START  task  347 | kind: Io | skips:  1 | arrived: 6996ms
+[Worker  5] FINISH task  344 | kind: Cpu | arrived: 6935ms | wait: 6106ms | turnaround: 6306ms
+[Worker  5] START  task  362 | kind: Cpu | skips:  0 | arrived: 7297ms
+[Worker  0] FINISH task  354 | kind: Cpu | arrived: 7136ms | wait: 6023ms | turnaround: 6223ms
+[Worker  0] START  task  364 | kind: Cpu | skips:  0 | arrived: 7337ms
+[Worker  3] FINISH task  346 | kind: Io | arrived: 6975ms | wait: 6184ms | turnaround: 6384ms
+[Worker  3] START  task  348 | kind: Io | skips:  3 | arrived: 7016ms
+[Worker  4] FINISH task  347 | kind: Io | arrived: 6996ms | wait: 6246ms | turnaround: 6446ms
+[Worker  4] START  task  349 | kind: Io | skips:  3 | arrived: 7036ms
+[Worker  5] FINISH task  362 | kind: Cpu | arrived: 7297ms | wait: 5945ms | turnaround: 6145ms
+[Worker  5] START  task  367 | kind: Cpu | skips:  0 | arrived: 7398ms
+[Worker  0] FINISH task  364 | kind: Cpu | arrived: 7337ms | wait: 6022ms | turnaround: 6222ms
+[Worker  0] START  task  369 | kind: Cpu | skips:  0 | arrived: 7438ms
+[Worker  3] FINISH task  348 | kind: Io | arrived: 7016ms | wait: 6344ms | turnaround: 6544ms
+[Worker  3] START  task  350 | kind: Io | skips:  5 | arrived: 7056ms
+[Worker  4] FINISH task  349 | kind: Io | arrived: 7036ms | wait: 6406ms | turnaround: 6606ms
+[Worker  4] START  task  351 | kind: Io | skips:  5 | arrived: 7076ms
+[Worker  5] FINISH task  367 | kind: Cpu | arrived: 7398ms | wait: 6044ms | turnaround: 6244ms
+[Worker  5] START  task  374 | kind: Cpu | skips:  0 | arrived: 7538ms
+[Worker  0] FINISH task  369 | kind: Cpu | arrived: 7438ms | wait: 6122ms | turnaround: 6322ms
+[Worker  0] START  task  378 | kind: Cpu | skips:  0 | arrived: 7619ms
+[Worker  3] FINISH task  350 | kind: Io | arrived: 7056ms | wait: 6504ms | turnaround: 6704ms
+[Worker  3] START  task  352 | kind: Io | skips:  7 | arrived: 7096ms
+[Worker  4] FINISH task  351 | kind: Io | arrived: 7076ms | wait: 6566ms | turnaround: 6766ms
+[Worker  4] START  task  353 | kind: Io | skips:  7 | arrived: 7116ms
+[Worker  5] FINISH task  374 | kind: Cpu | arrived: 7538ms | wait: 6104ms | turnaround: 6304ms
+[Worker  5] START  task  380 | kind: Cpu | skips:  0 | arrived: 7659ms
+[Worker  0] FINISH task  378 | kind: Cpu | arrived: 7619ms | wait: 6141ms | turnaround: 6341ms
+[Worker  0] START  task  382 | kind: Cpu | skips:  0 | arrived: 7699ms
+[Worker  3] FINISH task  352 | kind: Io | arrived: 7096ms | wait: 6664ms | turnaround: 6864ms
+[Worker  3] START  task  355 | kind: Io | skips:  8 | arrived: 7156ms
+[Worker  4] FINISH task  353 | kind: Io | arrived: 7116ms | wait: 6726ms | turnaround: 6926ms
+[Worker  4] START  task  356 | kind: Io | skips:  8 | arrived: 7176ms
+[Worker  5] FINISH task  380 | kind: Cpu | arrived: 7659ms | wait: 6183ms | turnaround: 6383ms
+[Worker  5] START  task  383 | kind: Cpu | skips:  0 | arrived: 7719ms
+[Worker  0] FINISH task  382 | kind: Cpu | arrived: 7699ms | wait: 6261ms | turnaround: 6461ms
+[Worker  0] START  task  391 | kind: Cpu | skips:  0 | arrived: 7880ms
+[Worker  3] FINISH task  355 | kind: Io | arrived: 7156ms | wait: 6804ms | turnaround: 7004ms
+[Worker  7] START  task  357 | kind: Io | skips: 10 | arrived: 7196ms
+[Worker  4] FINISH task  356 | kind: Io | arrived: 7176ms | wait: 6866ms | turnaround: 7066ms
+[Worker  4] START  task  358 | kind: Io | skips: 10 | arrived: 7216ms
+[Worker  5] FINISH task  383 | kind: Cpu | arrived: 7719ms | wait: 6323ms | turnaround: 6523ms
+[Worker  5] START  task  392 | kind: Cpu | skips:  0 | arrived: 7900ms
+[Worker  0] FINISH task  391 | kind: Cpu | arrived: 7880ms | wait: 6280ms | turnaround: 6480ms
+[Worker  0] START  task  394 | kind: Cpu | skips:  0 | arrived: 7940ms
+[Worker  7] FINISH task  357 | kind: Io | arrived: 7196ms | wait: 6964ms | turnaround: 7164ms
+[Worker  7] START  task  359 | kind: Io | skips: 12 | arrived: 7237ms
+[Worker  4] FINISH task  358 | kind: Io | arrived: 7216ms | wait: 7026ms | turnaround: 7226ms
+[Worker  4] START  task  360 | kind: Io | skips: 12 | arrived: 7257ms
+[Worker  5] FINISH task  392 | kind: Cpu | arrived: 7900ms | wait: 6343ms | turnaround: 6543ms
+[Worker  5] START  task  397 | kind: Cpu | skips:  0 | arrived: 8000ms
+[Worker  7] FINISH task  359 | kind: Io | arrived: 7237ms | wait: 7124ms | turnaround: 7324ms
+[Worker  7] START  task  361 | kind: Io | skips: 13 | arrived: 7277ms
+[Worker  0] FINISH task  394 | kind: Cpu | arrived: 7940ms | wait: 6420ms | turnaround: 6621ms
+[Worker  0] START  task  401 | kind: Cpu | skips:  0 | arrived: 8081ms
+[Worker  4] FINISH task  360 | kind: Io | arrived: 7257ms | wait: 7186ms | turnaround: 7386ms
+[Worker  4] START  task  363 | kind: Io | skips: 13 | arrived: 7317ms
+[Worker  5] FINISH task  397 | kind: Cpu | arrived: 8000ms | wait: 6443ms | turnaround: 6643ms
+[Worker  5] START  task  408 | kind: Cpu | skips:  0 | arrived: 8226ms
+[Worker  7] FINISH task  361 | kind: Io | arrived: 7277ms | wait: 7284ms | turnaround: 7486ms
+[Worker  7] START  task  365 | kind: Io | skips: 13 | arrived: 7357ms
+[Worker  0] FINISH task  401 | kind: Cpu | arrived: 8081ms | wait: 6482ms | turnaround: 6682ms
+[Worker  0] START  task  410 | kind: Cpu | skips:  0 | arrived: 8266ms
+[Worker  4] FINISH task  363 | kind: Io | arrived: 7317ms | wait: 7326ms | turnaround: 7526ms
+[Worker  4] START  task  366 | kind: Io | skips: 14 | arrived: 7377ms
+[Worker  5] FINISH task  408 | kind: Cpu | arrived: 8226ms | wait: 6417ms | turnaround: 6617ms
+[Worker  5] START  task  416 | kind: Cpu | skips:  0 | arrived: 8387ms
+[Worker  7] FINISH task  365 | kind: Io | arrived: 7357ms | wait: 7405ms | turnaround: 7605ms
+[Worker  7] START  task  368 | kind: Io | skips: 14 | arrived: 7418ms
+[Worker  0] FINISH task  410 | kind: Cpu | arrived: 8266ms | wait: 6496ms | turnaround: 6696ms
+[Worker  0] START  task  423 | kind: Cpu | skips:  0 | arrived: 8528ms
+[Worker  4] FINISH task  366 | kind: Io | arrived: 7377ms | wait: 7466ms | turnaround: 7667ms
+[Worker  5] FINISH task  416 | kind: Cpu | arrived: 8387ms | wait: 6456ms | turnaround: 6657ms
+[Worker  5] START  task  424 | kind: Cpu | skips:  0 | arrived: 8548ms
+[Worker  4] START  task  370 | kind: Io | skips: 14 | arrived: 7458ms
+[Worker  7] FINISH task  368 | kind: Io | arrived: 7418ms | wait: 7545ms | turnaround: 7745ms
+[Worker  7] START  task  371 | kind: Io | skips: 15 | arrived: 7478ms
+[Worker  0] FINISH task  423 | kind: Cpu | arrived: 8528ms | wait: 6435ms | turnaround: 6635ms
+[Worker  0] START  task  426 | kind: Cpu | skips:  0 | arrived: 8588ms
+[Worker  5] FINISH task  424 | kind: Cpu | arrived: 8548ms | wait: 6498ms | turnaround: 6698ms
+[Worker  5] START  task  430 | kind: Cpu | skips:  0 | arrived: 8668ms
+[Worker  4] FINISH task  370 | kind: Io | arrived: 7458ms | wait: 7587ms | turnaround: 7787ms
+[Worker  4] START  task  372 | kind: Io | skips: 17 | arrived: 7498ms
+[Worker  7] FINISH task  371 | kind: Io | arrived: 7478ms | wait: 7684ms | turnaround: 7885ms
+[Worker  7] START  task  373 | kind: Io | skips: 17 | arrived: 7518ms
+[Worker  0] FINISH task  426 | kind: Cpu | arrived: 8588ms | wait: 6575ms | turnaround: 6776ms
+[Worker  0] START  task  434 | kind: Cpu | skips:  0 | arrived: 8749ms
+[Worker  5] FINISH task  430 | kind: Cpu | arrived: 8668ms | wait: 6577ms | turnaround: 6777ms
+[Worker  4] FINISH task  372 | kind: Io | arrived: 7498ms | wait: 7747ms | turnaround: 7948ms
+[Worker  4] START  task  375 | kind: Io | skips: 18 | arrived: 7559ms
+[Worker  5] START  task  442 | kind: Cpu | skips:  0 | arrived: 8912ms
+[Worker  7] FINISH task  373 | kind: Io | arrived: 7518ms | wait: 7845ms | turnaround: 8045ms
+[Worker  7] START  task  376 | kind: Io | skips: 18 | arrived: 7579ms
+[Worker  0] FINISH task  434 | kind: Cpu | arrived: 8749ms | wait: 6615ms | turnaround: 6815ms
+[Worker  0] START  task  443 | kind: Cpu | skips:  0 | arrived: 8932ms
+[Worker  4] FINISH task  375 | kind: Io | arrived: 7559ms | wait: 7887ms | turnaround: 8087ms
+[Worker  4] START  task  377 | kind: Io | skips: 19 | arrived: 7599ms
+[Worker  5] FINISH task  442 | kind: Cpu | arrived: 8912ms | wait: 6534ms | turnaround: 6734ms
+[Worker  5] START  task  455 | kind: Cpu | skips:  0 | arrived: 9174ms
+[Worker  7] FINISH task  376 | kind: Io | arrived: 7579ms | wait: 7985ms | turnaround: 8185ms
+[Worker  7] START  task  379 | kind: Io | skips: 19 | arrived: 7639ms
+[Worker  0] FINISH task  443 | kind: Cpu | arrived: 8932ms | wait: 6632ms | turnaround: 6832ms
+[Worker  0] START  task  457 | kind: Cpu | skips:  0 | arrived: 9214ms
+[Worker  4] FINISH task  377 | kind: Io | arrived: 7599ms | wait: 8047ms | turnaround: 8247ms
+[Worker  4] START  task  381 | kind: Io | skips: 19 | arrived: 7679ms
+[Worker  5] FINISH task  455 | kind: Cpu | arrived: 9174ms | wait: 6473ms | turnaround: 6673ms
+[Worker  5] START  task  458 | kind: Cpu | skips:  0 | arrived: 9234ms
+[Worker  7] FINISH task  379 | kind: Io | arrived: 7639ms | wait: 8125ms | turnaround: 8325ms
+[Worker  7] START  task  384 | kind: Io | skips: 18 | arrived: 7739ms
+[Worker  0] FINISH task  457 | kind: Cpu | arrived: 9214ms | wait: 6551ms | turnaround: 6751ms
+[Worker  0] START  task  465 | kind: Cpu | skips:  0 | arrived: 9376ms
+[Worker  4] FINISH task  381 | kind: Io | arrived: 7679ms | wait: 8167ms | turnaround: 8367ms
+[Worker  4] START  task  385 | kind: Io | skips: 19 | arrived: 7759ms
+[Worker  5] FINISH task  458 | kind: Cpu | arrived: 9234ms | wait: 6612ms | turnaround: 6813ms
+[Worker  5] START  task  472 | kind: Cpu | skips:  0 | arrived: 9517ms
+[Worker  7] FINISH task  384 | kind: Io | arrived: 7739ms | wait: 8225ms | turnaround: 8425ms
+[Worker  7] START  task  386 | kind: Io | skips: 20 | arrived: 7779ms
+[Worker  0] FINISH task  465 | kind: Cpu | arrived: 9376ms | wait: 6588ms | turnaround: 6789ms
+[Worker  0] START  task  387 | kind: Io | skips: 20 | arrived: 7799ms
+[Worker  1] START  task  388 | kind: Io | skips: 20 | arrived: 7820ms
+[Worker  3] START  task  389 | kind: Io | skips: 20 | arrived: 7840ms
+[Worker  2] START  task  390 | kind: Io | skips: 20 | arrived: 7860ms
+[Worker  4] FINISH task  385 | kind: Io | arrived: 7759ms | wait: 8287ms | turnaround: 8487ms
+[Worker  4] START  task  393 | kind: Io | skips: 18 | arrived: 7920ms
+[Worker  5] FINISH task  472 | kind: Cpu | arrived: 9517ms | wait: 6530ms | turnaround: 6730ms
+[Worker  5] START  task  476 | kind: Cpu | skips:  0 | arrived: 9597ms
+[Worker  7] FINISH task  386 | kind: Io | arrived: 7779ms | wait: 8385ms | turnaround: 8585ms
+[Worker  7] START  task  395 | kind: Io | skips: 18 | arrived: 7960ms
+[Worker  0] FINISH task  387 | kind: Io | arrived: 7799ms | wait: 8365ms | turnaround: 8565ms
+[Worker  1] FINISH task  388 | kind: Io | arrived: 7820ms | wait: 8345ms | turnaround: 8545ms
+[Worker  1] START  task  398 | kind: Io | skips: 17 | arrived: 8020ms
+[Worker  3] FINISH task  389 | kind: Io | arrived: 7840ms | wait: 8325ms | turnaround: 8525ms
+[Worker  3] START  task  399 | kind: Io | skips: 17 | arrived: 8040ms
+[Worker  6] START  task  396 | kind: Io | skips: 18 | arrived: 7980ms
+[Worker  2] FINISH task  390 | kind: Io | arrived: 7860ms | wait: 8305ms | turnaround: 8505ms
+[Worker  2] START  task  400 | kind: Io | skips: 17 | arrived: 8061ms
+[Worker  4] FINISH task  393 | kind: Io | arrived: 7920ms | wait: 8327ms | turnaround: 8527ms
+[Worker  4] START  task  402 | kind: Io | skips: 16 | arrived: 8101ms
+[Worker  5] FINISH task  476 | kind: Cpu | arrived: 9597ms | wait: 6649ms | turnaround: 6850ms
+[Worker  5] START  task  477 | kind: Cpu | skips:  0 | arrived: 9618ms
+[Worker  7] FINISH task  395 | kind: Io | arrived: 7960ms | wait: 8404ms | turnaround: 8604ms
+[Worker  7] START  task  403 | kind: Io | skips: 17 | arrived: 8126ms
+[Worker  1] FINISH task  398 | kind: Io | arrived: 8020ms | wait: 8345ms | turnaround: 8545ms
+[Worker  1] START  task  404 | kind: Io | skips: 17 | arrived: 8146ms
+[Worker  3] FINISH task  399 | kind: Io | arrived: 8040ms | wait: 8325ms | turnaround: 8525ms
+[Worker  2] FINISH task  400 | kind: Io | arrived: 8061ms | wait: 8305ms | turnaround: 8505ms
+[Worker  6] FINISH task  396 | kind: Io | arrived: 7980ms | wait: 8385ms | turnaround: 8585ms
+[Worker  0] START  task  405 | kind: Io | skips: 17 | arrived: 8166ms
+[Worker  2] START  task  406 | kind: Io | skips: 17 | arrived: 8186ms
+[Worker  3] START  task  407 | kind: Io | skips: 17 | arrived: 8206ms
+[Worker  4] FINISH task  402 | kind: Io | arrived: 8101ms | wait: 8347ms | turnaround: 8549ms
+[Worker  4] START  task  409 | kind: Io | skips: 16 | arrived: 8246ms
+[Worker  5] FINISH task  477 | kind: Cpu | arrived: 9618ms | wait: 6832ms | turnaround: 7033ms
+[Worker  5] START  task  482 | kind: Cpu | skips:  0 | arrived: 9718ms
+[Worker  7] FINISH task  403 | kind: Io | arrived: 8126ms | wait: 8439ms | turnaround: 8639ms
+[Worker  7] START  task  411 | kind: Io | skips: 16 | arrived: 8287ms
+[Worker  1] FINISH task  404 | kind: Io | arrived: 8146ms | wait: 8419ms | turnaround: 8620ms
+[Worker  1] START  task  412 | kind: Io | skips: 16 | arrived: 8307ms
+[Worker  0] FINISH task  405 | kind: Io | arrived: 8166ms | wait: 8399ms | turnaround: 8600ms
+[Worker  2] FINISH task  406 | kind: Io | arrived: 8186ms | wait: 8379ms | turnaround: 8580ms
+[Worker  0] START  task  413 | kind: Io | skips: 16 | arrived: 8327ms
+[Worker  3] FINISH task  407 | kind: Io | arrived: 8206ms | wait: 8360ms | turnaround: 8560ms
+[Worker  3] START  task  414 | kind: Io | skips: 16 | arrived: 8347ms
+[Worker  2] START  task  415 | kind: Io | skips: 16 | arrived: 8367ms
+[Worker  4] FINISH task  409 | kind: Io | arrived: 8246ms | wait: 8403ms | turnaround: 8603ms
+[Worker  4] START  task  417 | kind: Io | skips: 15 | arrived: 8407ms
+[Worker  5] FINISH task  482 | kind: Cpu | arrived: 9718ms | wait: 6932ms | turnaround: 7132ms
+[Worker  5] START  task  484 | kind: Cpu | skips:  0 | arrived: 9758ms
+[Worker  7] FINISH task  411 | kind: Io | arrived: 8287ms | wait: 8478ms | turnaround: 8678ms
+[Worker  7] START  task  418 | kind: Io | skips: 16 | arrived: 8427ms
+[Worker  1] FINISH task  412 | kind: Io | arrived: 8307ms | wait: 8459ms | turnaround: 8659ms
+[Worker  1] START  task  419 | kind: Io | skips: 16 | arrived: 8447ms
+[Worker  0] FINISH task  413 | kind: Io | arrived: 8327ms | wait: 8439ms | turnaround: 8639ms
+[Worker  0] START  task  420 | kind: Io | skips: 16 | arrived: 8467ms
+[Worker  3] FINISH task  414 | kind: Io | arrived: 8347ms | wait: 8419ms | turnaround: 8619ms
+[Worker  2] FINISH task  415 | kind: Io | arrived: 8367ms | wait: 8399ms | turnaround: 8599ms
+[Worker  3] START  task  421 | kind: Io | skips: 16 | arrived: 8487ms
+[Worker  2] START  task  422 | kind: Io | skips: 16 | arrived: 8508ms
+[Worker  4] FINISH task  417 | kind: Io | arrived: 8407ms | wait: 8443ms | turnaround: 8643ms
+[Worker  4] START  task  425 | kind: Io | skips: 14 | arrived: 8568ms
+[Worker  5] FINISH task  484 | kind: Cpu | arrived: 9758ms | wait: 7092ms | turnaround: 7292ms
+[Worker  5] START  task  485 | kind: Cpu | skips:  0 | arrived: 9778ms
+[Worker  7] FINISH task  418 | kind: Io | arrived: 8427ms | wait: 8538ms | turnaround: 8738ms
+[Worker  7] START  task  427 | kind: Io | skips: 14 | arrived: 8608ms
+[Worker  1] FINISH task  419 | kind: Io | arrived: 8447ms | wait: 8518ms | turnaround: 8718ms
+[Worker  1] START  task  428 | kind: Io | skips: 14 | arrived: 8628ms
+[Worker  0] FINISH task  420 | kind: Io | arrived: 8467ms | wait: 8499ms | turnaround: 8699ms
+[Worker  0] START  task  429 | kind: Io | skips: 14 | arrived: 8648ms
+[Worker  3] FINISH task  421 | kind: Io | arrived: 8487ms | wait: 8479ms | turnaround: 8679ms
+[Worker  3] START  task  431 | kind: Io | skips: 13 | arrived: 8688ms
+[Worker  2] FINISH task  422 | kind: Io | arrived: 8508ms | wait: 8459ms | turnaround: 8659ms
+[Worker  2] START  task  432 | kind: Io | skips: 13 | arrived: 8709ms
+[Worker  4] FINISH task  425 | kind: Io | arrived: 8568ms | wait: 8482ms | turnaround: 8683ms
+[Worker  4] START  task  433 | kind: Io | skips: 13 | arrived: 8729ms
+[Worker  5] FINISH task  485 | kind: Cpu | arrived: 9778ms | wait: 7272ms | turnaround: 7472ms
+[Worker  5] START  task  486 | kind: Cpu | skips:  0 | arrived: 9798ms
+[Worker  7] FINISH task  427 | kind: Io | arrived: 8608ms | wait: 8557ms | turnaround: 8757ms
+[Worker  7] START  task  435 | kind: Io | skips: 13 | arrived: 8769ms
+[Worker  1] FINISH task  428 | kind: Io | arrived: 8628ms | wait: 8538ms | turnaround: 8738ms
+[Worker  1] START  task  436 | kind: Io | skips: 13 | arrived: 8789ms
+[Worker  0] FINISH task  429 | kind: Io | arrived: 8648ms | wait: 8518ms | turnaround: 8718ms
+[Worker  0] START  task  437 | kind: Io | skips: 13 | arrived: 8810ms
+[Worker  3] FINISH task  431 | kind: Io | arrived: 8688ms | wait: 8478ms | turnaround: 8678ms
+[Worker  3] START  task  438 | kind: Io | skips: 13 | arrived: 8830ms
+[Worker  2] FINISH task  432 | kind: Io | arrived: 8709ms | wait: 8458ms | turnaround: 8658ms
+[Worker  2] START  task  439 | kind: Io | skips: 13 | arrived: 8850ms
+[Worker  4] FINISH task  433 | kind: Io | arrived: 8729ms | wait: 8522ms | turnaround: 8722ms
+[Worker  4] START  task  440 | kind: Io | skips: 13 | arrived: 8872ms
+[Worker  5] FINISH task  486 | kind: Cpu | arrived: 9798ms | wait: 7452ms | turnaround: 7652ms
+[Worker  5] START  task  489 | kind: Cpu | skips:  0 | arrived: 9859ms
+[Worker  7] FINISH task  435 | kind: Io | arrived: 8769ms | wait: 8597ms | turnaround: 8797ms
+[Worker  7] START  task  441 | kind: Io | skips: 14 | arrived: 8892ms
+[Worker  1] FINISH task  436 | kind: Io | arrived: 8789ms | wait: 8577ms | turnaround: 8777ms
+[Worker  1] START  task  444 | kind: Io | skips: 12 | arrived: 8953ms
+[Worker  0] FINISH task  437 | kind: Io | arrived: 8810ms | wait: 8556ms | turnaround: 8756ms
+[Worker  0] START  task  445 | kind: Io | skips: 12 | arrived: 8973ms
+[Worker  3] FINISH task  438 | kind: Io | arrived: 8830ms | wait: 8536ms | turnaround: 8736ms
+[Worker  3] START  task  446 | kind: Io | skips: 12 | arrived: 8993ms
+[Worker  2] FINISH task  439 | kind: Io | arrived: 8850ms | wait: 8516ms | turnaround: 8716ms
+[Worker  2] START  task  447 | kind: Io | skips: 12 | arrived: 9013ms
+[Worker  4] FINISH task  440 | kind: Io | arrived: 8872ms | wait: 8579ms | turnaround: 8779ms
+[Worker  4] START  task  448 | kind: Io | skips: 12 | arrived: 9033ms
+[Worker  5] FINISH task  489 | kind: Cpu | arrived: 9859ms | wait: 7592ms | turnaround: 7792ms
+[Worker  5] START  task  493 | kind: Cpu | skips:  0 | arrived: 9939ms
+[Worker  7] FINISH task  441 | kind: Io | arrived: 8892ms | wait: 8673ms | turnaround: 8873ms
+[Worker  7] START  task  449 | kind: Io | skips: 13 | arrived: 9053ms
+[Worker  1] FINISH task  444 | kind: Io | arrived: 8953ms | wait: 8614ms | turnaround: 8814ms
+[Worker  1] START  task  450 | kind: Io | skips: 13 | arrived: 9073ms
+[Worker  0] FINISH task  445 | kind: Io | arrived: 8973ms | wait: 8594ms | turnaround: 8794ms
+[Worker  6] START  task  451 | kind: Io | skips: 13 | arrived: 9093ms
+[Worker  3] FINISH task  446 | kind: Io | arrived: 8993ms | wait: 8574ms | turnaround: 8774ms
+[Worker  3] START  task  452 | kind: Io | skips: 13 | arrived: 9113ms
+[Worker  2] FINISH task  447 | kind: Io | arrived: 9013ms | wait: 8554ms | turnaround: 8754ms
+[Worker  2] START  task  453 | kind: Io | skips: 13 | arrived: 9133ms
+[Worker  4] FINISH task  448 | kind: Io | arrived: 9033ms | wait: 8618ms | turnaround: 8818ms
+[Worker  4] START  task  454 | kind: Io | skips: 13 | arrived: 9154ms
+[Worker  5] FINISH task  493 | kind: Cpu | arrived: 9939ms | wait: 7712ms | turnaround: 7912ms
+[Worker  5] START  task  494 | kind: Cpu | skips:  0 | arrived: 9959ms
+[Worker  7] FINISH task  449 | kind: Io | arrived: 9053ms | wait: 8713ms | turnaround: 8913ms
+[Worker  7] START  task  456 | kind: Io | skips: 13 | arrived: 9194ms
+[Worker  1] FINISH task  450 | kind: Io | arrived: 9073ms | wait: 8693ms | turnaround: 8893ms
+[Worker  1] START  task  459 | kind: Io | skips: 11 | arrived: 9254ms
+[Worker  6] FINISH task  451 | kind: Io | arrived: 9093ms | wait: 8673ms | turnaround: 8873ms
+[Worker  6] START  task  460 | kind: Io | skips: 11 | arrived: 9274ms
+[Worker  3] FINISH task  452 | kind: Io | arrived: 9113ms | wait: 8653ms | turnaround: 8854ms
+[Worker  3] START  task  461 | kind: Io | skips: 11 | arrived: 9294ms
+[Worker  2] FINISH task  453 | kind: Io | arrived: 9133ms | wait: 8634ms | turnaround: 8834ms
+[Worker  2] START  task  462 | kind: Io | skips: 11 | arrived: 9314ms
+[Worker  4] FINISH task  454 | kind: Io | arrived: 9154ms | wait: 8697ms | turnaround: 8897ms
+[Worker  4] START  task  463 | kind: Io | skips: 11 | arrived: 9334ms
+[Worker  5] FINISH task  494 | kind: Cpu | arrived: 9959ms | wait: 7892ms | turnaround: 8092ms
+[Worker  5] START  task  501 | kind: Cpu | skips:  0 | arrived: 10100ms
+[Worker  7] FINISH task  456 | kind: Io | arrived: 9194ms | wait: 8772ms | turnaround: 8972ms
+[Worker  7] START  task  464 | kind: Io | skips: 12 | arrived: 9356ms
+[Worker  1] FINISH task  459 | kind: Io | arrived: 9254ms | wait: 8712ms | turnaround: 8913ms
+[Worker  1] START  task  466 | kind: Io | skips: 11 | arrived: 9396ms
+[Worker  6] FINISH task  460 | kind: Io | arrived: 9274ms | wait: 8693ms | turnaround: 8893ms
+[Worker  6] START  task  467 | kind: Io | skips: 11 | arrived: 9416ms
+[Worker  2] FINISH task  462 | kind: Io | arrived: 9314ms | wait: 8653ms | turnaround: 8853ms
+[Worker  2] START  task  468 | kind: Io | skips: 11 | arrived: 9437ms
+[Worker  3] FINISH task  461 | kind: Io | arrived: 9294ms | wait: 8673ms | turnaround: 8873ms
+[Worker  3] START  task  469 | kind: Io | skips: 11 | arrived: 9457ms
+[Worker  4] FINISH task  463 | kind: Io | arrived: 9334ms | wait: 8717ms | turnaround: 8917ms
+[Worker  4] START  task  470 | kind: Io | skips: 11 | arrived: 9477ms
+[Worker  5] FINISH task  501 | kind: Cpu | arrived: 10100ms | wait: 7952ms | turnaround: 8152ms
+[Worker  0] START  task  507 | kind: Cpu | skips:  0 | arrived: 10221ms
+[Worker  7] FINISH task  464 | kind: Io | arrived: 9356ms | wait: 8810ms | turnaround: 9010ms
+[Worker  7] START  task  471 | kind: Io | skips: 12 | arrived: 9497ms
+[Worker  1] FINISH task  466 | kind: Io | arrived: 9396ms | wait: 8771ms | turnaround: 8971ms
+[Worker  1] START  task  473 | kind: Io | skips: 11 | arrived: 9537ms
+[Worker  6] FINISH task  467 | kind: Io | arrived: 9416ms | wait: 8751ms | turnaround: 8951ms
+[Worker  6] START  task  474 | kind: Io | skips: 11 | arrived: 9557ms
+[Worker  2] FINISH task  468 | kind: Io | arrived: 9437ms | wait: 8731ms | turnaround: 8931ms
+[Worker  2] START  task  475 | kind: Io | skips: 11 | arrived: 9577ms
+[Worker  3] FINISH task  469 | kind: Io | arrived: 9457ms | wait: 8711ms | turnaround: 8911ms
+[Worker  3] START  task  478 | kind: Io | skips:  9 | arrived: 9638ms
+[Worker  4] FINISH task  470 | kind: Io | arrived: 9477ms | wait: 8775ms | turnaround: 8975ms
+[Worker  4] START  task  479 | kind: Io | skips:  9 | arrived: 9658ms
+[Worker  0] FINISH task  507 | kind: Cpu | arrived: 10221ms | wait: 8031ms | turnaround: 8231ms
+[Worker  0] START  task  511 | kind: Cpu | skips:  0 | arrived: 10301ms
+[Worker  7] FINISH task  471 | kind: Io | arrived: 9497ms | wait: 8870ms | turnaround: 9070ms
+[Worker  7] START  task  480 | kind: Io | skips: 10 | arrived: 9678ms
+[Worker  1] FINISH task  473 | kind: Io | arrived: 9537ms | wait: 8830ms | turnaround: 9030ms
+[Worker  1] START  task  481 | kind: Io | skips: 10 | arrived: 9698ms
+[Worker  6] FINISH task  474 | kind: Io | arrived: 9557ms | wait: 8810ms | turnaround: 9010ms
+[Worker  6] START  task  483 | kind: Io | skips:  9 | arrived: 9738ms
+[Worker  2] FINISH task  475 | kind: Io | arrived: 9577ms | wait: 8790ms | turnaround: 8990ms
+[Worker  2] START  task  487 | kind: Io | skips:  6 | arrived: 9818ms
+[Worker  3] FINISH task  478 | kind: Io | arrived: 9638ms | wait: 8730ms | turnaround: 8930ms
+[Worker  3] START  task  488 | kind: Io | skips:  6 | arrived: 9839ms
+[Worker  4] FINISH task  479 | kind: Io | arrived: 9658ms | wait: 8794ms | turnaround: 8994ms
+[Worker  4] START  task  490 | kind: Io | skips:  5 | arrived: 9879ms
+[Worker  0] FINISH task  511 | kind: Cpu | arrived: 10301ms | wait: 8150ms | turnaround: 8351ms
+[Worker  0] START  task  512 | kind: Cpu | skips:  0 | arrived: 10321ms
+[Worker  7] FINISH task  480 | kind: Io | arrived: 9678ms | wait: 8889ms | turnaround: 9089ms
+[Worker  7] START  task  491 | kind: Io | skips:  6 | arrived: 9899ms
+[Worker  1] FINISH task  481 | kind: Io | arrived: 9698ms | wait: 8869ms | turnaround: 9069ms
+[Worker  1] START  task  492 | kind: Io | skips:  6 | arrived: 9919ms
+[Worker  6] FINISH task  483 | kind: Io | arrived: 9738ms | wait: 8829ms | turnaround: 9029ms
+[Worker  6] START  task  495 | kind: Io | skips:  4 | arrived: 9979ms
+[Worker  2] FINISH task  487 | kind: Io | arrived: 9818ms | wait: 8749ms | turnaround: 8949ms
+[Worker  2] START  task  496 | kind: Io | skips:  4 | arrived: 9999ms
+[Worker  3] FINISH task  488 | kind: Io | arrived: 9839ms | wait: 8729ms | turnaround: 8929ms
+[Worker  5] START  task  497 | kind: Io | skips:  4 | arrived: 10019ms
+[Worker  4] FINISH task  490 | kind: Io | arrived: 9879ms | wait: 8773ms | turnaround: 8973ms
+[Worker  4] START  task  498 | kind: Io | skips:  4 | arrived: 10039ms
+[Worker  0] FINISH task  512 | kind: Cpu | arrived: 10321ms | wait: 8330ms | turnaround: 8531ms
+[Worker  0] START  task  514 | kind: Cpu | skips:  0 | arrived: 10362ms
+[Worker  7] FINISH task  491 | kind: Io | arrived: 9899ms | wait: 8868ms | turnaround: 9068ms
+[Worker  7] START  task  499 | kind: Io | skips:  5 | arrived: 10060ms
+[Worker  1] FINISH task  492 | kind: Io | arrived: 9919ms | wait: 8848ms | turnaround: 9048ms
+[Worker  1] START  task  500 | kind: Io | skips:  5 | arrived: 10080ms
+[Worker  6] FINISH task  495 | kind: Io | arrived: 9979ms | wait: 8788ms | turnaround: 8988ms
+[Worker  6] START  task  502 | kind: Io | skips:  4 | arrived: 10120ms
+[Worker  2] FINISH task  496 | kind: Io | arrived: 9999ms | wait: 8769ms | turnaround: 8969ms
+[Worker  2] START  task  503 | kind: Io | skips:  4 | arrived: 10140ms
+[Worker  5] FINISH task  497 | kind: Io | arrived: 10019ms | wait: 8749ms | turnaround: 8949ms
+[Worker  5] START  task  504 | kind: Io | skips:  4 | arrived: 10160ms
+[Worker  4] FINISH task  498 | kind: Io | arrived: 10039ms | wait: 8812ms | turnaround: 9013ms
+[Worker  4] START  task  505 | kind: Io | skips:  4 | arrived: 10181ms
+[Worker  0] FINISH task  514 | kind: Cpu | arrived: 10362ms | wait: 8491ms | turnaround: 8691ms
+[Worker  0] START  task  517 | kind: Cpu | skips:  0 | arrived: 10422ms
+[Worker  1] FINISH task  500 | kind: Io | arrived: 10080ms | wait: 8888ms | turnaround: 9088ms
+[Worker  6] FINISH task  502 | kind: Io | arrived: 10120ms | wait: 8848ms | turnaround: 9048ms
+[Worker  7] FINISH task  499 | kind: Io | arrived: 10060ms | wait: 8907ms | turnaround: 9109ms
+[Worker  7] START  task  509 | kind: Io | skips:  4 | arrived: 10261ms
+[Worker  5] FINISH task  504 | kind: Io | arrived: 10160ms | wait: 8808ms | turnaround: 9008ms
+[Worker  5] START  task  510 | kind: Io | skips:  4 | arrived: 10281ms
+[Worker  1] START  task  506 | kind: Io | skips:  5 | arrived: 10201ms
+[Worker  6] START  task  508 | kind: Io | skips:  4 | arrived: 10241ms
+[Worker  2] FINISH task  503 | kind: Io | arrived: 10140ms | wait: 8828ms | turnaround: 9028ms
+[Worker  2] START  task  513 | kind: Io | skips:  2 | arrived: 10341ms
+[Worker  4] FINISH task  505 | kind: Io | arrived: 10181ms | wait: 8871ms | turnaround: 9071ms
+[Worker  4] START  task  515 | kind: Io | skips:  1 | arrived: 10382ms
+[Worker  0] FINISH task  517 | kind: Cpu | arrived: 10422ms | wait: 8631ms | turnaround: 8831ms
+[Worker  0] START  task  518 | kind: Cpu | skips:  0 | arrived: 10442ms
+[Worker  5] FINISH task  510 | kind: Io | arrived: 10281ms | wait: 8888ms | turnaround: 9088ms
+[Worker  5] START  task  516 | kind: Io | skips:  2 | arrived: 10402ms
+[Worker  7] FINISH task  509 | kind: Io | arrived: 10261ms | wait: 8908ms | turnaround: 9108ms
+[Worker  7] START  task  519 | kind: Io | skips:  0 | arrived: 10462ms
+[Worker  1] FINISH task  506 | kind: Io | arrived: 10201ms | wait: 8968ms | turnaround: 9169ms
+[Worker  1] START  task  520 | kind: Io | skips:  0 | arrived: 10482ms
+[Worker  6] FINISH task  508 | kind: Io | arrived: 10241ms | wait: 8928ms | turnaround: 9129ms
+[Worker  6] START  task  522 | kind: Io | skips:  0 | arrived: 10522ms
+[Worker  2] FINISH task  513 | kind: Io | arrived: 10341ms | wait: 8828ms | turnaround: 9028ms
+[Worker  2] START  task  524 | kind: Io | skips:  0 | arrived: 10562ms
+[Worker  4] FINISH task  515 | kind: Io | arrived: 10382ms | wait: 8871ms | turnaround: 9071ms
+[Worker  4] START  task  526 | kind: Io | skips:  0 | arrived: 10602ms
+[Worker  0] FINISH task  518 | kind: Cpu | arrived: 10442ms | wait: 8811ms | turnaround: 9011ms
+[Worker  0] START  task  521 | kind: Cpu | skips:  3 | arrived: 10502ms
+[Worker  5] FINISH task  516 | kind: Io | arrived: 10402ms | wait: 8968ms | turnaround: 9168ms
+[Worker  5] START  task  527 | kind: Io | skips:  0 | arrived: 10623ms
+[Worker  1] FINISH task  520 | kind: Io | arrived: 10482ms | wait: 8888ms | turnaround: 9088ms
+[Worker  1] START  task  528 | kind: Io | skips:  0 | arrived: 10643ms
+[Worker  2] FINISH task  524 | kind: Io | arrived: 10562ms | wait: 8808ms | turnaround: 9008ms
+[Worker  2] START  task  529 | kind: Io | skips:  0 | arrived: 10663ms
+[Worker  6] FINISH task  522 | kind: Io | arrived: 10522ms | wait: 8848ms | turnaround: 9048ms
+[Worker  7] FINISH task  519 | kind: Io | arrived: 10462ms | wait: 8908ms | turnaround: 9108ms
+[Worker  3] START  task  530 | kind: Io | skips:  0 | arrived: 10683ms
+[Worker  6] START  task  532 | kind: Io | skips:  0 | arrived: 10723ms
+[Worker  4] FINISH task  526 | kind: Io | arrived: 10602ms | wait: 8850ms | turnaround: 9050ms
+[Worker  4] START  task  534 | kind: Io | skips:  0 | arrived: 10763ms
+[Worker  0] FINISH task  521 | kind: Cpu | arrived: 10502ms | wait: 8951ms | turnaround: 9151ms
+[Worker  0] START  task  523 | kind: Cpu | skips:  8 | arrived: 10542ms
+[Worker  5] FINISH task  527 | kind: Io | arrived: 10623ms | wait: 8947ms | turnaround: 9147ms
+[Worker  5] START  task  536 | kind: Io | skips:  0 | arrived: 10804ms
+[Worker  1] FINISH task  528 | kind: Io | arrived: 10643ms | wait: 8927ms | turnaround: 9128ms
+[Worker  1] START  task  537 | kind: Io | skips:  0 | arrived: 10824ms
+[Worker  2] FINISH task  529 | kind: Io | arrived: 10663ms | wait: 8907ms | turnaround: 9108ms
+[Worker  2] START  task  538 | kind: Io | skips:  0 | arrived: 10844ms
+[Worker  3] FINISH task  530 | kind: Io | arrived: 10683ms | wait: 8888ms | turnaround: 9088ms
+[Worker  3] START  task  540 | kind: Io | skips:  0 | arrived: 10884ms
+[Worker  6] FINISH task  532 | kind: Io | arrived: 10723ms | wait: 8847ms | turnaround: 9048ms
+[Worker  7] START  task  541 | kind: Io | skips:  0 | arrived: 10906ms
+[Worker  4] FINISH task  534 | kind: Io | arrived: 10763ms | wait: 8890ms | turnaround: 9090ms
+[Worker  0] FINISH task  523 | kind: Cpu | arrived: 10542ms | wait: 9111ms | turnaround: 9311ms
+[Worker  4] START  task  542 | kind: Io | skips:  0 | arrived: 10926ms
+[Worker  0] START  task  525 | kind: Cpu | skips: 13 | arrived: 10582ms
+[Worker  5] FINISH task  536 | kind: Io | arrived: 10804ms | wait: 8966ms | turnaround: 9166ms
+[Worker  5] START  task  543 | kind: Io | skips:  0 | arrived: 10947ms
+[Worker  1] FINISH task  537 | kind: Io | arrived: 10824ms | wait: 8946ms | turnaround: 9146ms
+[Worker  1] START  task  544 | kind: Io | skips:  0 | arrived: 10967ms
+[Worker  2] FINISH task  538 | kind: Io | arrived: 10844ms | wait: 8926ms | turnaround: 9126ms
+[Worker  2] START  task  545 | kind: Io | skips:  0 | arrived: 10987ms
+[Worker  3] FINISH task  540 | kind: Io | arrived: 10884ms | wait: 8886ms | turnaround: 9086ms
+[Worker  3] START  task  546 | kind: Io | skips:  0 | arrived: 11007ms
+[Worker  7] FINISH task  541 | kind: Io | arrived: 10906ms | wait: 8865ms | turnaround: 9065ms
+[Worker  7] START  task  547 | kind: Io | skips:  0 | arrived: 11027ms
+[Worker  4] FINISH task  542 | kind: Io | arrived: 10926ms | wait: 8927ms | turnaround: 9127ms
+[Worker  4] START  task  548 | kind: Io | skips:  0 | arrived: 11048ms
+[Worker  0] FINISH task  525 | kind: Cpu | arrived: 10582ms | wait: 9271ms | turnaround: 9471ms
+[Worker  0] START  task  531 | kind: Cpu | skips: 14 | arrived: 10703ms
+[Worker  5] FINISH task  543 | kind: Io | arrived: 10947ms | wait: 9023ms | turnaround: 9223ms
+[Worker  5] START  task  549 | kind: Io | skips:  0 | arrived: 11068ms
+[Worker  1] FINISH task  544 | kind: Io | arrived: 10967ms | wait: 9003ms | turnaround: 9204ms
+[Worker  1] START  task  550 | kind: Io | skips:  0 | arrived: 11088ms
+[Worker  2] FINISH task  545 | kind: Io | arrived: 10987ms | wait: 8983ms | turnaround: 9184ms
+[Worker  2] START  task  552 | kind: Io | skips:  0 | arrived: 11128ms
+[Worker  3] FINISH task  546 | kind: Io | arrived: 11007ms | wait: 8963ms | turnaround: 9164ms
+[Worker  3] START  task  553 | kind: Io | skips:  0 | arrived: 11148ms
+[Worker  7] FINISH task  547 | kind: Io | arrived: 11027ms | wait: 8943ms | turnaround: 9144ms
+[Worker  7] START  task  554 | kind: Io | skips:  0 | arrived: 11168ms
+[Worker  4] FINISH task  548 | kind: Io | arrived: 11048ms | wait: 9006ms | turnaround: 9206ms
+[Worker  0] FINISH task  531 | kind: Cpu | arrived: 10703ms | wait: 9351ms | turnaround: 9551ms
+[Worker  0] START  task  533 | kind: Cpu | skips: 19 | arrived: 10743ms
+[Worker  4] START  task  555 | kind: Io | skips:  0 | arrived: 11188ms
+[Worker  5] FINISH task  549 | kind: Io | arrived: 11068ms | wait: 9103ms | turnaround: 9303ms
+[Worker  5] START  task  556 | kind: Io | skips:  0 | arrived: 11208ms
+[Worker  1] FINISH task  550 | kind: Io | arrived: 11088ms | wait: 9083ms | turnaround: 9283ms
+[Worker  1] START  task  557 | kind: Io | skips:  0 | arrived: 11228ms
+[Worker  2] FINISH task  552 | kind: Io | arrived: 11128ms | wait: 9043ms | turnaround: 9243ms
+[Worker  3] FINISH task  553 | kind: Io | arrived: 11148ms | wait: 9023ms | turnaround: 9223ms
+[Worker  7] FINISH task  554 | kind: Io | arrived: 11168ms | wait: 9003ms | turnaround: 9203ms
+[Worker  7] START  task  535 | kind: Cpu | skips: 20 | arrived: 10783ms
+[Worker  0] FINISH task  533 | kind: Cpu | arrived: 10743ms | wait: 9511ms | turnaround: 9711ms
+[Worker  0] START  task  539 | kind: Cpu | skips: 17 | arrived: 10864ms
+[Worker  4] FINISH task  555 | kind: Io | arrived: 11188ms | wait: 9066ms | turnaround: 9266ms
+[Worker  5] FINISH task  556 | kind: Io | arrived: 11208ms | wait: 9162ms | turnaround: 9363ms
+[Worker  5] START  task  558 | kind: Io | skips:  0 | arrived: 11248ms
+[Worker  1] FINISH task  557 | kind: Io | arrived: 11228ms | wait: 9143ms | turnaround: 9344ms
+[Worker  1] START  task  559 | kind: Io | skips:  0 | arrived: 11268ms
+[Worker  7] FINISH task  535 | kind: Cpu | arrived: 10783ms | wait: 9588ms | turnaround: 9790ms
+[Worker  7] START  task  551 | kind: Cpu | skips:  8 | arrived: 11108ms
+[Worker  0] FINISH task  539 | kind: Cpu | arrived: 10864ms | wait: 9590ms | turnaround: 9790ms
+[Worker  0] START  task  560 | kind: Cpu | skips:  0 | arrived: 11288ms
+[Worker  5] FINISH task  558 | kind: Io | arrived: 11248ms | wait: 9324ms | turnaround: 9524ms
+[Worker  5] START  task  561 | kind: Io | skips:  0 | arrived: 11309ms
+[Worker  1] FINISH task  559 | kind: Io | arrived: 11268ms | wait: 9304ms | turnaround: 9504ms
+[Worker  1] START  task  562 | kind: Io | skips:  0 | arrived: 11329ms
+[Worker  7] FINISH task  551 | kind: Cpu | arrived: 11108ms | wait: 9466ms | turnaround: 9666ms
+[Worker  2] START  task  564 | kind: Cpu | skips:  0 | arrived: 11369ms
+[Worker  0] FINISH task  560 | kind: Cpu | arrived: 11288ms | wait: 9366ms | turnaround: 9566ms
+[Worker  0] START  task  565 | kind: Cpu | skips:  0 | arrived: 11389ms
+[Worker  5] FINISH task  561 | kind: Io | arrived: 11309ms | wait: 9464ms | turnaround: 9664ms
+[Worker  5] START  task  563 | kind: Io | skips:  2 | arrived: 11349ms
+[Worker  1] FINISH task  562 | kind: Io | arrived: 11329ms | wait: 9444ms | turnaround: 9644ms
+[Worker  1] START  task  566 | kind: Io | skips:  0 | arrived: 11409ms
+[Worker  2] FINISH task  564 | kind: Cpu | arrived: 11369ms | wait: 9405ms | turnaround: 9605ms
+[Worker  2] START  task  567 | kind: Cpu | skips:  0 | arrived: 11429ms
+[Worker  0] FINISH task  565 | kind: Cpu | arrived: 11389ms | wait: 9465ms | turnaround: 9666ms
+[Worker  0] START  task  570 | kind: Cpu | skips:  0 | arrived: 11489ms
+[Worker  5] FINISH task  563 | kind: Io | arrived: 11349ms | wait: 9624ms | turnaround: 9824ms
+[Worker  5] START  task  568 | kind: Io | skips:  1 | arrived: 11449ms
+[Worker  1] FINISH task  566 | kind: Io | arrived: 11409ms | wait: 9564ms | turnaround: 9764ms
+[Worker  1] START  task  569 | kind: Io | skips:  1 | arrived: 11469ms
+[Worker  2] FINISH task  567 | kind: Cpu | arrived: 11429ms | wait: 9545ms | turnaround: 9745ms
+[Worker  7] START  task  571 | kind: Cpu | skips:  0 | arrived: 11509ms
+[Worker  0] FINISH task  570 | kind: Cpu | arrived: 11489ms | wait: 9565ms | turnaround: 9765ms
+[Worker  0] START  task  574 | kind: Cpu | skips:  0 | arrived: 11570ms
+[Worker  5] FINISH task  568 | kind: Io | arrived: 11449ms | wait: 9724ms | turnaround: 9924ms
+[Worker  5] START  task  572 | kind: Io | skips:  1 | arrived: 11529ms
+[Worker  1] FINISH task  569 | kind: Io | arrived: 11469ms | wait: 9704ms | turnaround: 9904ms
+[Worker  1] START  task  573 | kind: Io | skips:  1 | arrived: 11549ms
+[Worker  7] FINISH task  571 | kind: Cpu | arrived: 11509ms | wait: 9665ms | turnaround: 9865ms
+[Worker  7] START  task  577 | kind: Cpu | skips:  0 | arrived: 11631ms
+[Worker  0] FINISH task  574 | kind: Cpu | arrived: 11570ms | wait: 9685ms | turnaround: 9886ms
+[Worker  0] START  task  585 | kind: Cpu | skips:  0 | arrived: 11791ms
+[Worker  5] FINISH task  572 | kind: Io | arrived: 11529ms | wait: 9844ms | turnaround: 10044ms
+[Worker  5] START  task  575 | kind: Io | skips:  2 | arrived: 11590ms
+[Worker  1] FINISH task  573 | kind: Io | arrived: 11549ms | wait: 9824ms | turnaround: 10024ms
+[Worker  1] START  task  576 | kind: Io | skips:  2 | arrived: 11610ms
+[Worker  7] FINISH task  577 | kind: Cpu | arrived: 11631ms | wait: 9744ms | turnaround: 9944ms
+[Worker  7] START  task  586 | kind: Cpu | skips:  0 | arrived: 11811ms
+[Worker  0] FINISH task  585 | kind: Cpu | arrived: 11791ms | wait: 9664ms | turnaround: 9864ms
+[Worker  6] START  task  588 | kind: Cpu | skips:  0 | arrived: 11851ms
+[Worker  5] FINISH task  575 | kind: Io | arrived: 11590ms | wait: 9984ms | turnaround: 10184ms
+[Worker  5] START  task  578 | kind: Io | skips:  3 | arrived: 11651ms
+[Worker  1] FINISH task  576 | kind: Io | arrived: 11610ms | wait: 9963ms | turnaround: 10163ms
+[Worker  1] START  task  579 | kind: Io | skips:  3 | arrived: 11671ms
+[Worker  7] FINISH task  586 | kind: Cpu | arrived: 11811ms | wait: 9763ms | turnaround: 9963ms
+[Worker  7] START  task  592 | kind: Cpu | skips:  0 | arrived: 11932ms
+[Worker  6] FINISH task  588 | kind: Cpu | arrived: 11851ms | wait: 9804ms | turnaround: 10004ms
+[Worker  6] START  task  593 | kind: Cpu | skips:  0 | arrived: 11952ms
+[Worker  5] FINISH task  578 | kind: Io | arrived: 11651ms | wait: 10123ms | turnaround: 10323ms
+[Worker  5] START  task  580 | kind: Io | skips:  5 | arrived: 11691ms
+[Worker  1] FINISH task  579 | kind: Io | arrived: 11671ms | wait: 10103ms | turnaround: 10303ms
+[Worker  1] START  task  581 | kind: Io | skips:  5 | arrived: 11711ms
+[Worker  7] FINISH task  592 | kind: Cpu | arrived: 11932ms | wait: 9843ms | turnaround: 10043ms
+[Worker  7] START  task  598 | kind: Cpu | skips:  0 | arrived: 12052ms
+[Worker  6] FINISH task  593 | kind: Cpu | arrived: 11952ms | wait: 9904ms | turnaround: 10104ms
+[Worker  6] START  task  601 | kind: Cpu | skips:  0 | arrived: 12112ms
+[Worker  5] FINISH task  580 | kind: Io | arrived: 11691ms | wait: 10283ms | turnaround: 10483ms
+[Worker  5] START  task  582 | kind: Io | skips:  7 | arrived: 11731ms
+[Worker  1] FINISH task  581 | kind: Io | arrived: 11711ms | wait: 10263ms | turnaround: 10463ms
+[Worker  1] START  task  583 | kind: Io | skips:  7 | arrived: 11751ms
+[Worker  7] FINISH task  598 | kind: Cpu | arrived: 12052ms | wait: 9922ms | turnaround: 10122ms
+[Worker  7] START  task  602 | kind: Cpu | skips:  0 | arrived: 12133ms
+[Worker  6] FINISH task  601 | kind: Cpu | arrived: 12112ms | wait: 9944ms | turnaround: 10144ms
+[Worker  6] START  task  603 | kind: Cpu | skips:  0 | arrived: 12153ms
+[Worker  5] FINISH task  582 | kind: Io | arrived: 11731ms | wait: 10443ms | turnaround: 10643ms
+[Worker  5] START  task  584 | kind: Io | skips:  9 | arrived: 11771ms
+[Worker  1] FINISH task  583 | kind: Io | arrived: 11751ms | wait: 10423ms | turnaround: 10623ms
+[Worker  1] START  task  587 | kind: Io | skips:  7 | arrived: 11831ms
+[Worker  7] FINISH task  602 | kind: Cpu | arrived: 12133ms | wait: 10042ms | turnaround: 10242ms
+[Worker  7] START  task  604 | kind: Cpu | skips:  0 | arrived: 12173ms
+[Worker  6] FINISH task  603 | kind: Cpu | arrived: 12153ms | wait: 10104ms | turnaround: 10304ms
+[Worker  6] START  task  610 | kind: Cpu | skips:  0 | arrived: 12296ms
+[Worker  5] FINISH task  584 | kind: Io | arrived: 11771ms | wait: 10603ms | turnaround: 10803ms
+[Worker  5] START  task  589 | kind: Io | skips:  8 | arrived: 11872ms
+[Worker  1] FINISH task  587 | kind: Io | arrived: 11831ms | wait: 10543ms | turnaround: 10743ms
+[Worker  1] START  task  590 | kind: Io | skips:  8 | arrived: 11892ms
+[Worker  7] FINISH task  604 | kind: Cpu | arrived: 12173ms | wait: 10202ms | turnaround: 10402ms
+[Worker  7] START  task  611 | kind: Cpu | skips:  0 | arrived: 12318ms
+[Worker  6] FINISH task  610 | kind: Cpu | arrived: 12296ms | wait: 10161ms | turnaround: 10361ms
+[Worker  6] START  task  612 | kind: Cpu | skips:  0 | arrived: 12338ms
+[Worker  5] FINISH task  589 | kind: Io | arrived: 11872ms | wait: 10703ms | turnaround: 10903ms
+[Worker  5] START  task  591 | kind: Io | skips: 10 | arrived: 11912ms
+[Worker  1] FINISH task  590 | kind: Io | arrived: 11892ms | wait: 10683ms | turnaround: 10883ms
+[Worker  3] START  task  594 | kind: Io | skips:  8 | arrived: 11972ms
+[Worker  7] FINISH task  611 | kind: Cpu | arrived: 12318ms | wait: 10257ms | turnaround: 10457ms
+[Worker  7] START  task  613 | kind: Cpu | skips:  0 | arrived: 12359ms
+[Worker  6] FINISH task  612 | kind: Cpu | arrived: 12338ms | wait: 10319ms | turnaround: 10519ms
+[Worker  0] START  task  614 | kind: Cpu | skips:  0 | arrived: 12379ms
+[Worker  5] FINISH task  591 | kind: Io | arrived: 11912ms | wait: 10863ms | turnaround: 11063ms
+[Worker  5] START  task  595 | kind: Io | skips: 10 | arrived: 11992ms
+[Worker  3] FINISH task  594 | kind: Io | arrived: 11972ms | wait: 10803ms | turnaround: 11003ms
+[Worker  3] START  task  596 | kind: Io | skips: 10 | arrived: 12012ms
+[Worker  7] FINISH task  613 | kind: Cpu | arrived: 12359ms | wait: 10417ms | turnaround: 10617ms
+[Worker  7] START  task  618 | kind: Cpu | skips:  0 | arrived: 12462ms
+[Worker  0] FINISH task  614 | kind: Cpu | arrived: 12379ms | wait: 10479ms | turnaround: 10679ms
+[Worker  1] START  task  623 | kind: Cpu | skips:  0 | arrived: 12562ms
+[Worker  5] FINISH task  595 | kind: Io | arrived: 11992ms | wait: 10983ms | turnaround: 11183ms
+[Worker  5] START  task  597 | kind: Io | skips: 12 | arrived: 12032ms
+[Worker  3] FINISH task  596 | kind: Io | arrived: 12012ms | wait: 10963ms | turnaround: 11163ms
+[Worker  3] START  task  599 | kind: Io | skips: 11 | arrived: 12072ms
+[Worker  7] FINISH task  618 | kind: Cpu | arrived: 12462ms | wait: 10514ms | turnaround: 10714ms
+[Worker  7] START  task  632 | kind: Cpu | skips:  0 | arrived: 12743ms
+[Worker  1] FINISH task  623 | kind: Cpu | arrived: 12562ms | wait: 10495ms | turnaround: 10696ms
+[Worker  6] START  task  637 | kind: Cpu | skips:  0 | arrived: 12843ms
+[Worker  5] FINISH task  597 | kind: Io | arrived: 12032ms | wait: 11143ms | turnaround: 11343ms
+[Worker  5] START  task  600 | kind: Io | skips: 13 | arrived: 12092ms
+[Worker  3] FINISH task  599 | kind: Io | arrived: 12072ms | wait: 11103ms | turnaround: 11303ms
+[Worker  0] START  task  605 | kind: Io | skips:  9 | arrived: 12193ms
+[Worker  7] FINISH task  632 | kind: Cpu | arrived: 12743ms | wait: 10433ms | turnaround: 10633ms
+[Worker  7] START  task  638 | kind: Cpu | skips:  0 | arrived: 12863ms
+[Worker  6] FINISH task  637 | kind: Cpu | arrived: 12843ms | wait: 10415ms | turnaround: 10615ms
+[Worker  6] START  task  643 | kind: Cpu | skips:  0 | arrived: 12964ms
+[Worker  5] FINISH task  600 | kind: Io | arrived: 12092ms | wait: 11283ms | turnaround: 11483ms
+[Worker  5] START  task  606 | kind: Io | skips: 11 | arrived: 12213ms
+[Worker  0] FINISH task  605 | kind: Io | arrived: 12193ms | wait: 11182ms | turnaround: 11383ms
+[Worker  0] START  task  607 | kind: Io | skips: 11 | arrived: 12233ms
+[Worker  7] FINISH task  638 | kind: Cpu | arrived: 12863ms | wait: 10513ms | turnaround: 10713ms
+[Worker  7] START  task  645 | kind: Cpu | skips:  0 | arrived: 13005ms
+[Worker  6] FINISH task  643 | kind: Cpu | arrived: 12964ms | wait: 10494ms | turnaround: 10695ms
+[Worker  2] START  task  649 | kind: Cpu | skips:  0 | arrived: 13086ms
+[Worker  5] FINISH task  606 | kind: Io | arrived: 12213ms | wait: 11362ms | turnaround: 11563ms
+[Worker  5] START  task  608 | kind: Io | skips: 13 | arrived: 12253ms
+[Worker  0] FINISH task  607 | kind: Io | arrived: 12233ms | wait: 11342ms | turnaround: 11543ms
+[Worker  0] START  task  609 | kind: Io | skips: 13 | arrived: 12276ms
+[Worker  7] FINISH task  645 | kind: Cpu | arrived: 13005ms | wait: 10571ms | turnaround: 10771ms
+[Worker  7] START  task  650 | kind: Cpu | skips:  0 | arrived: 13106ms
+[Worker  2] FINISH task  649 | kind: Cpu | arrived: 13086ms | wait: 10573ms | turnaround: 10773ms
+[Worker  2] START  task  652 | kind: Cpu | skips:  0 | arrived: 13146ms
+[Worker  5] FINISH task  608 | kind: Io | arrived: 12253ms | wait: 11522ms | turnaround: 11723ms
+[Worker  5] START  task  615 | kind: Io | skips: 10 | arrived: 12399ms
+[Worker  0] FINISH task  609 | kind: Io | arrived: 12276ms | wait: 11500ms | turnaround: 11700ms
+[Worker  0] START  task  616 | kind: Io | skips: 10 | arrived: 12421ms
+[Worker  7] FINISH task  650 | kind: Cpu | arrived: 13106ms | wait: 10670ms | turnaround: 10871ms
+[Worker  7] START  task  653 | kind: Cpu | skips:  0 | arrived: 13166ms
+[Worker  2] FINISH task  652 | kind: Cpu | arrived: 13146ms | wait: 10713ms | turnaround: 10913ms
+[Worker  2] START  task  654 | kind: Cpu | skips:  0 | arrived: 13186ms
+[Worker  5] FINISH task  615 | kind: Io | arrived: 12399ms | wait: 11577ms | turnaround: 11777ms
+[Worker  5] START  task  617 | kind: Io | skips: 12 | arrived: 12442ms
+[Worker  0] FINISH task  616 | kind: Io | arrived: 12421ms | wait: 11554ms | turnaround: 11755ms
+[Worker  0] START  task  619 | kind: Io | skips: 11 | arrived: 12482ms
+[Worker  7] FINISH task  653 | kind: Cpu | arrived: 13166ms | wait: 10810ms | turnaround: 11010ms
+[Worker  7] START  task  667 | kind: Cpu | skips:  0 | arrived: 13447ms
+[Worker  2] FINISH task  654 | kind: Cpu | arrived: 13186ms | wait: 10873ms | turnaround: 11073ms
+[Worker  2] START  task  668 | kind: Cpu | skips:  0 | arrived: 13468ms
+[Worker  5] FINISH task  617 | kind: Io | arrived: 12442ms | wait: 11734ms | turnaround: 11934ms
+[Worker  5] START  task  620 | kind: Io | skips: 13 | arrived: 12502ms
+[Worker  0] FINISH task  619 | kind: Io | arrived: 12482ms | wait: 11694ms | turnaround: 11895ms
+[Worker  0] START  task  621 | kind: Io | skips: 13 | arrived: 12522ms
+[Worker  7] FINISH task  667 | kind: Cpu | arrived: 13447ms | wait: 10729ms | turnaround: 10930ms
+[Worker  7] START  task  671 | kind: Cpu | skips:  0 | arrived: 13528ms
+[Worker  2] FINISH task  668 | kind: Cpu | arrived: 13468ms | wait: 10792ms | turnaround: 10992ms
+[Worker  2] START  task  675 | kind: Cpu | skips:  0 | arrived: 13608ms
+[Worker  5] FINISH task  620 | kind: Io | arrived: 12502ms | wait: 11874ms | turnaround: 12074ms
+[Worker  5] START  task  622 | kind: Io | skips: 15 | arrived: 12542ms
+[Worker  0] FINISH task  621 | kind: Io | arrived: 12522ms | wait: 11854ms | turnaround: 12054ms
+[Worker  0] START  task  624 | kind: Io | skips: 14 | arrived: 12582ms
+[Worker  7] FINISH task  671 | kind: Cpu | arrived: 13528ms | wait: 10849ms | turnaround: 11049ms
+[Worker  7] START  task  676 | kind: Cpu | skips:  0 | arrived: 13628ms
+[Worker  2] FINISH task  675 | kind: Cpu | arrived: 13608ms | wait: 10851ms | turnaround: 11051ms
+[Worker  2] START  task  685 | kind: Cpu | skips:  0 | arrived: 13809ms
+[Worker  5] FINISH task  622 | kind: Io | arrived: 12542ms | wait: 12034ms | turnaround: 12236ms
+[Worker  5] START  task  625 | kind: Io | skips: 16 | arrived: 12602ms
+[Worker  0] FINISH task  624 | kind: Io | arrived: 12582ms | wait: 11994ms | turnaround: 12196ms
+[Worker  0] START  task  626 | kind: Io | skips: 16 | arrived: 12622ms
+[Worker  7] FINISH task  676 | kind: Cpu | arrived: 13628ms | wait: 10949ms | turnaround: 11150ms
+[Worker  7] START  task  688 | kind: Cpu | skips:  0 | arrived: 13869ms
+[Worker  2] FINISH task  685 | kind: Cpu | arrived: 13809ms | wait: 10851ms | turnaround: 11051ms
+[Worker  3] START  task  689 | kind: Cpu | skips:  0 | arrived: 13889ms
+[Worker  5] FINISH task  625 | kind: Io | arrived: 12602ms | wait: 12176ms | turnaround: 12376ms
+[Worker  5] START  task  627 | kind: Io | skips: 18 | arrived: 12642ms
+[Worker  0] FINISH task  626 | kind: Io | arrived: 12622ms | wait: 12156ms | turnaround: 12356ms
+[Worker  7] FINISH task  688 | kind: Cpu | arrived: 13869ms | wait: 10909ms | turnaround: 11109ms
+[Worker  7] START  task  690 | kind: Cpu | skips:  0 | arrived: 13909ms
+[Worker  0] START  task  628 | kind: Io | skips: 19 | arrived: 12662ms
+[Worker  3] FINISH task  689 | kind: Cpu | arrived: 13889ms | wait: 10971ms | turnaround: 11171ms
+[Worker  3] START  task  694 | kind: Cpu | skips:  0 | arrived: 13990ms
+[Worker  5] FINISH task  627 | kind: Io | arrived: 12642ms | wait: 12336ms | turnaround: 12536ms
+[Worker  5] START  task  629 | kind: Io | skips: 20 | arrived: 12682ms
+[Worker  7] FINISH task  690 | kind: Cpu | arrived: 13909ms | wait: 11069ms | turnaround: 11269ms
+[Worker  7] START  task  630 | kind: Io | skips: 20 | arrived: 12703ms
+[Worker  2] START  task  631 | kind: Io | skips: 20 | arrived: 12723ms
+[Worker  0] FINISH task  628 | kind: Io | arrived: 12662ms | wait: 12316ms | turnaround: 12516ms
+[Worker  0] START  task  635 | kind: Io | skips: 19 | arrived: 12803ms
+[Worker  6] START  task  633 | kind: Io | skips: 19 | arrived: 12763ms
+[Worker  1] START  task  634 | kind: Io | skips: 19 | arrived: 12783ms
+[Worker  3] FINISH task  694 | kind: Cpu | arrived: 13990ms | wait: 11070ms | turnaround: 11271ms
+[Worker  3] START  task  695 | kind: Cpu | skips:  0 | arrived: 14010ms
+[Worker  7] FINISH task  630 | kind: Io | arrived: 12703ms | wait: 12476ms | turnaround: 12676ms
+[Worker  7] START  task  636 | kind: Io | skips: 20 | arrived: 12823ms
+[Worker  5] FINISH task  629 | kind: Io | arrived: 12682ms | wait: 12496ms | turnaround: 12696ms
+[Worker  5] START  task  639 | kind: Io | skips: 18 | arrived: 12883ms
+[Worker  1] FINISH task  634 | kind: Io | arrived: 12783ms | wait: 12396ms | turnaround: 12596ms
+[Worker  1] START  task  640 | kind: Io | skips: 18 | arrived: 12903ms
+[Worker  6] FINISH task  633 | kind: Io | arrived: 12763ms | wait: 12416ms | turnaround: 12616ms
+[Worker  6] START  task  641 | kind: Io | skips: 18 | arrived: 12923ms
+[Worker  2] FINISH task  631 | kind: Io | arrived: 12723ms | wait: 12456ms | turnaround: 12656ms
+[Worker  0] FINISH task  635 | kind: Io | arrived: 12803ms | wait: 12376ms | turnaround: 12576ms
+[Worker  2] START  task  642 | kind: Io | skips: 18 | arrived: 12944ms
+[Worker  0] START  task  644 | kind: Io | skips: 17 | arrived: 12984ms
+[Worker  3] FINISH task  695 | kind: Cpu | arrived: 14010ms | wait: 11251ms | turnaround: 11451ms
+[Worker  3] START  task  698 | kind: Cpu | skips:  0 | arrived: 14070ms
+[Worker  7] FINISH task  636 | kind: Io | arrived: 12823ms | wait: 12556ms | turnaround: 12756ms
+[Worker  7] START  task  646 | kind: Io | skips: 17 | arrived: 13026ms
+[Worker  5] FINISH task  639 | kind: Io | arrived: 12883ms | wait: 12496ms | turnaround: 12696ms
+[Worker  5] START  task  647 | kind: Io | skips: 17 | arrived: 13046ms
+[Worker  1] FINISH task  640 | kind: Io | arrived: 12903ms | wait: 12476ms | turnaround: 12676ms
+[Worker  1] START  task  648 | kind: Io | skips: 17 | arrived: 13066ms
+[Worker  6] FINISH task  641 | kind: Io | arrived: 12923ms | wait: 12456ms | turnaround: 12656ms
+[Worker  6] START  task  651 | kind: Io | skips: 15 | arrived: 13126ms
+[Worker  2] FINISH task  642 | kind: Io | arrived: 12944ms | wait: 12437ms | turnaround: 12637ms
+[Worker  2] START  task  655 | kind: Io | skips: 12 | arrived: 13206ms
+[Worker  0] FINISH task  644 | kind: Io | arrived: 12984ms | wait: 12396ms | turnaround: 12596ms
+[Worker  0] START  task  656 | kind: Io | skips: 12 | arrived: 13226ms
+[Worker  3] FINISH task  698 | kind: Cpu | arrived: 14070ms | wait: 11391ms | turnaround: 11591ms
+[Worker  3] START  task  704 | kind: Cpu | skips:  0 | arrived: 14190ms
+[Worker  7] FINISH task  646 | kind: Io | arrived: 13026ms | wait: 12554ms | turnaround: 12754ms
+[Worker  7] START  task  657 | kind: Io | skips: 13 | arrived: 13247ms
+[Worker  5] FINISH task  647 | kind: Io | arrived: 13046ms | wait: 12534ms | turnaround: 12734ms
+[Worker  5] START  task  658 | kind: Io | skips: 13 | arrived: 13267ms
+[Worker  1] FINISH task  648 | kind: Io | arrived: 13066ms | wait: 12514ms | turnaround: 12714ms
+[Worker  1] START  task  659 | kind: Io | skips: 13 | arrived: 13287ms
+[Worker  6] FINISH task  651 | kind: Io | arrived: 13126ms | wait: 12454ms | turnaround: 12654ms
+[Worker  6] START  task  660 | kind: Io | skips: 13 | arrived: 13307ms
+[Worker  2] FINISH task  655 | kind: Io | arrived: 13206ms | wait: 12374ms | turnaround: 12574ms
+[Worker  0] FINISH task  656 | kind: Io | arrived: 13226ms | wait: 12354ms | turnaround: 12554ms
+[Worker  4] START  task  661 | kind: Io | skips: 13 | arrived: 13327ms
+[Worker  0] START  task  662 | kind: Io | skips: 13 | arrived: 13347ms
+[Worker  3] FINISH task  704 | kind: Cpu | arrived: 14190ms | wait: 11470ms | turnaround: 11670ms
+[Worker  3] START  task  705 | kind: Cpu | skips:  0 | arrived: 14211ms
+[Worker  7] FINISH task  657 | kind: Io | arrived: 13247ms | wait: 12533ms | turnaround: 12733ms
+[Worker  7] START  task  663 | kind: Io | skips: 14 | arrived: 13367ms
+[Worker  5] FINISH task  658 | kind: Io | arrived: 13267ms | wait: 12513ms | turnaround: 12713ms
+[Worker  5] START  task  664 | kind: Io | skips: 14 | arrived: 13387ms
+[Worker  1] FINISH task  659 | kind: Io | arrived: 13287ms | wait: 12493ms | turnaround: 12693ms
+[Worker  2] START  task  665 | kind: Io | skips: 14 | arrived: 13407ms
+[Worker  6] FINISH task  660 | kind: Io | arrived: 13307ms | wait: 12473ms | turnaround: 12673ms
+[Worker  6] START  task  666 | kind: Io | skips: 14 | arrived: 13427ms
+[Worker  4] FINISH task  661 | kind: Io | arrived: 13327ms | wait: 12454ms | turnaround: 12654ms
+[Worker  4] START  task  669 | kind: Io | skips: 12 | arrived: 13488ms
+[Worker  0] FINISH task  662 | kind: Io | arrived: 13347ms | wait: 12434ms | turnaround: 12634ms
+[Worker  0] START  task  670 | kind: Io | skips: 12 | arrived: 13508ms
+[Worker  3] FINISH task  705 | kind: Cpu | arrived: 14211ms | wait: 11650ms | turnaround: 11850ms
+[Worker  3] START  task  707 | kind: Cpu | skips:  0 | arrived: 14251ms
+[Worker  7] FINISH task  663 | kind: Io | arrived: 13367ms | wait: 12612ms | turnaround: 12813ms
+[Worker  7] START  task  672 | kind: Io | skips: 12 | arrived: 13548ms
+[Worker  5] FINISH task  664 | kind: Io | arrived: 13387ms | wait: 12593ms | turnaround: 12793ms
+[Worker  5] START  task  673 | kind: Io | skips: 12 | arrived: 13568ms
+[Worker  2] FINISH task  665 | kind: Io | arrived: 13407ms | wait: 12573ms | turnaround: 12773ms
+[Worker  2] START  task  674 | kind: Io | skips: 12 | arrived: 13588ms
+[Worker  6] FINISH task  666 | kind: Io | arrived: 13427ms | wait: 12553ms | turnaround: 12753ms
+[Worker  6] START  task  677 | kind: Io | skips: 10 | arrived: 13648ms
+[Worker  4] FINISH task  669 | kind: Io | arrived: 13488ms | wait: 12493ms | turnaround: 12693ms
+[Worker  4] START  task  678 | kind: Io | skips: 10 | arrived: 13668ms
+[Worker  0] FINISH task  670 | kind: Io | arrived: 13508ms | wait: 12473ms | turnaround: 12673ms
+[Worker  0] START  task  679 | kind: Io | skips: 10 | arrived: 13688ms
+[Worker  3] FINISH task  707 | kind: Cpu | arrived: 14251ms | wait: 11810ms | turnaround: 12010ms
+[Worker  3] START  task  709 | kind: Cpu | skips:  0 | arrived: 14291ms
+[Worker  7] FINISH task  672 | kind: Io | arrived: 13548ms | wait: 12632ms | turnaround: 12832ms
+[Worker  7] START  task  680 | kind: Io | skips: 11 | arrived: 13709ms
+[Worker  2] FINISH task  674 | kind: Io | arrived: 13588ms | wait: 12592ms | turnaround: 12792ms
+[Worker  2] START  task  681 | kind: Io | skips: 11 | arrived: 13729ms
+[Worker  5] FINISH task  673 | kind: Io | arrived: 13568ms | wait: 12612ms | turnaround: 12812ms
+[Worker  5] START  task  682 | kind: Io | skips: 11 | arrived: 13749ms
+[Worker  6] FINISH task  677 | kind: Io | arrived: 13648ms | wait: 12532ms | turnaround: 12732ms
+[Worker  6] START  task  683 | kind: Io | skips: 11 | arrived: 13769ms
+[Worker  4] FINISH task  678 | kind: Io | arrived: 13668ms | wait: 12513ms | turnaround: 12713ms
+[Worker  4] START  task  684 | kind: Io | skips: 11 | arrived: 13789ms
+[Worker  0] FINISH task  679 | kind: Io | arrived: 13688ms | wait: 12493ms | turnaround: 12693ms
+[Worker  0] START  task  686 | kind: Io | skips: 10 | arrived: 13829ms
+[Worker  3] FINISH task  709 | kind: Cpu | arrived: 14291ms | wait: 11970ms | turnaround: 12170ms
+[Worker  3] START  task  715 | kind: Cpu | skips:  0 | arrived: 14412ms
+[Worker  7] FINISH task  680 | kind: Io | arrived: 13709ms | wait: 12671ms | turnaround: 12871ms
+[Worker  7] START  task  687 | kind: Io | skips: 11 | arrived: 13849ms
+[Worker  2] FINISH task  681 | kind: Io | arrived: 13729ms | wait: 12652ms | turnaround: 12852ms
+[Worker  2] START  task  691 | kind: Io | skips:  8 | arrived: 13929ms
+[Worker  5] FINISH task  682 | kind: Io | arrived: 13749ms | wait: 12632ms | turnaround: 12832ms
+[Worker  5] START  task  692 | kind: Io | skips:  8 | arrived: 13949ms
+[Worker  6] FINISH task  683 | kind: Io | arrived: 13769ms | wait: 12612ms | turnaround: 12812ms
+[Worker  6] START  task  693 | kind: Io | skips:  8 | arrived: 13970ms
+[Worker  4] FINISH task  684 | kind: Io | arrived: 13789ms | wait: 12592ms | turnaround: 12792ms
+[Worker  1] START  task  696 | kind: Io | skips:  6 | arrived: 14030ms
+[Worker  0] FINISH task  686 | kind: Io | arrived: 13829ms | wait: 12552ms | turnaround: 12752ms
+[Worker  0] START  task  697 | kind: Io | skips:  6 | arrived: 14050ms
+[Worker  3] FINISH task  715 | kind: Cpu | arrived: 14412ms | wait: 12050ms | turnaround: 12250ms
+[Worker  3] START  task  718 | kind: Cpu | skips:  0 | arrived: 14472ms
+[Worker  7] FINISH task  687 | kind: Io | arrived: 13849ms | wait: 12731ms | turnaround: 12931ms
+[Worker  7] START  task  699 | kind: Io | skips:  6 | arrived: 14090ms
+[Worker  2] FINISH task  691 | kind: Io | arrived: 13929ms | wait: 12651ms | turnaround: 12851ms
+[Worker  2] START  task  700 | kind: Io | skips:  6 | arrived: 14110ms
+[Worker  5] FINISH task  692 | kind: Io | arrived: 13949ms | wait: 12631ms | turnaround: 12831ms
+[Worker  5] START  task  701 | kind: Io | skips:  6 | arrived: 14130ms
+[Worker  6] FINISH task  693 | kind: Io | arrived: 13970ms | wait: 12611ms | turnaround: 12811ms
+[Worker  4] START  task  702 | kind: Io | skips:  6 | arrived: 14150ms
+[Worker  1] FINISH task  696 | kind: Io | arrived: 14030ms | wait: 12551ms | turnaround: 12752ms
+[Worker  1] START  task  703 | kind: Io | skips:  6 | arrived: 14170ms
+[Worker  0] FINISH task  697 | kind: Io | arrived: 14050ms | wait: 12532ms | turnaround: 12732ms
+[Worker  0] START  task  706 | kind: Io | skips:  4 | arrived: 14231ms
+[Worker  3] FINISH task  718 | kind: Cpu | arrived: 14472ms | wait: 12190ms | turnaround: 12390ms
+[Worker  3] START  task  719 | kind: Cpu | skips:  0 | arrived: 14492ms
+[Worker  7] FINISH task  699 | kind: Io | arrived: 14090ms | wait: 12690ms | turnaround: 12890ms
+[Worker  7] START  task  708 | kind: Io | skips:  4 | arrived: 14271ms
+[Worker  2] FINISH task  700 | kind: Io | arrived: 14110ms | wait: 12670ms | turnaround: 12870ms
+[Worker  2] START  task  710 | kind: Io | skips:  3 | arrived: 14311ms
+[Worker  5] FINISH task  701 | kind: Io | arrived: 14130ms | wait: 12650ms | turnaround: 12851ms
+[Worker  6] START  task  711 | kind: Io | skips:  3 | arrived: 14331ms
+[Worker  4] FINISH task  702 | kind: Io | arrived: 14150ms | wait: 12631ms | turnaround: 12831ms
+[Worker  4] START  task  712 | kind: Io | skips:  3 | arrived: 14351ms
+[Worker  1] FINISH task  703 | kind: Io | arrived: 14170ms | wait: 12611ms | turnaround: 12811ms
+[Worker  1] START  task  713 | kind: Io | skips:  3 | arrived: 14371ms
+[Worker  0] FINISH task  706 | kind: Io | arrived: 14231ms | wait: 12551ms | turnaround: 12751ms
+[Worker  0] START  task  714 | kind: Io | skips:  3 | arrived: 14392ms
+[Worker  3] FINISH task  719 | kind: Cpu | arrived: 14492ms | wait: 12370ms | turnaround: 12570ms
+[Worker  3] START  task  724 | kind: Cpu | skips:  0 | arrived: 14593ms
+[Worker  7] FINISH task  708 | kind: Io | arrived: 14271ms | wait: 12710ms | turnaround: 12910ms
+[Worker  7] START  task  716 | kind: Io | skips:  3 | arrived: 14432ms
+[Worker  4] FINISH task  712 | kind: Io | arrived: 14351ms | wait: 12630ms | turnaround: 12831ms
+[Worker  4] START  task  717 | kind: Io | skips:  3 | arrived: 14452ms
+[Worker  6] FINISH task  711 | kind: Io | arrived: 14331ms | wait: 12650ms | turnaround: 12851ms
+[Worker  6] START  task  720 | kind: Io | skips:  1 | arrived: 14512ms
+[Worker  2] FINISH task  710 | kind: Io | arrived: 14311ms | wait: 12670ms | turnaround: 12871ms
+[Worker  0] FINISH task  714 | kind: Io | arrived: 14392ms | wait: 12590ms | turnaround: 12791ms
+[Worker  2] START  task  721 | kind: Io | skips:  1 | arrived: 14532ms
+[Worker  1] FINISH task  713 | kind: Io | arrived: 14371ms | wait: 12610ms | turnaround: 12811ms
+[Worker  1] START  task  722 | kind: Io | skips:  1 | arrived: 14552ms
+[Worker  0] START  task  723 | kind: Io | skips:  1 | arrived: 14573ms
+[Worker  3] FINISH task  724 | kind: Cpu | arrived: 14593ms | wait: 12470ms | turnaround: 12670ms
+[Worker  5] START  task  727 | kind: Cpu | skips:  0 | arrived: 14653ms
+[Worker  7] FINISH task  716 | kind: Io | arrived: 14432ms | wait: 12750ms | turnaround: 12950ms
+[Worker  7] START  task  725 | kind: Io | skips:  1 | arrived: 14613ms
+[Worker  4] FINISH task  717 | kind: Io | arrived: 14452ms | wait: 12731ms | turnaround: 12931ms
+[Worker  4] START  task  726 | kind: Io | skips:  1 | arrived: 14633ms
+[Worker  6] FINISH task  720 | kind: Io | arrived: 14512ms | wait: 12670ms | turnaround: 12870ms
+[Worker  3] START  task  730 | kind: Io | skips:  0 | arrived: 14713ms
+[Worker  2] FINISH task  721 | kind: Io | arrived: 14532ms | wait: 12650ms | turnaround: 12851ms
+[Worker  2] START  task  732 | kind: Io | skips:  0 | arrived: 14753ms
+[Worker  1] FINISH task  722 | kind: Io | arrived: 14552ms | wait: 12630ms | turnaround: 12830ms
+[Worker  1] START  task  737 | kind: Io | skips:  0 | arrived: 14854ms
+[Worker  0] FINISH task  723 | kind: Io | arrived: 14573ms | wait: 12610ms | turnaround: 12811ms
+[Worker  0] START  task  738 | kind: Io | skips:  0 | arrived: 14874ms
+[Worker  5] FINISH task  727 | kind: Cpu | arrived: 14653ms | wait: 12609ms | turnaround: 12813ms
+[Worker  5] START  task  728 | kind: Cpu | skips:  4 | arrived: 14673ms
+[Worker  7] FINISH task  725 | kind: Io | arrived: 14613ms | wait: 12769ms | turnaround: 12969ms
+[Worker  6] START  task  739 | kind: Io | skips:  0 | arrived: 14894ms
+[Worker  4] FINISH task  726 | kind: Io | arrived: 14633ms | wait: 12750ms | turnaround: 12950ms
+[Worker  3] FINISH task  730 | kind: Io | arrived: 14713ms | wait: 12669ms | turnaround: 12870ms
+[Worker  3] START  task  740 | kind: Io | skips:  0 | arrived: 14914ms
+[Worker  7] START  task  741 | kind: Io | skips:  0 | arrived: 14934ms
+[Worker  2] FINISH task  732 | kind: Io | arrived: 14753ms | wait: 12630ms | turnaround: 12830ms
+[Worker  4] START  task  742 | kind: Io | skips:  0 | arrived: 14954ms
+[Worker  1] FINISH task  737 | kind: Io | arrived: 14854ms | wait: 12529ms | turnaround: 12730ms
+[Worker  1] START  task  743 | kind: Io | skips:  0 | arrived: 14974ms
+[Worker  0] FINISH task  738 | kind: Io | arrived: 14874ms | wait: 12509ms | turnaround: 12710ms
+[Worker  0] START  task  744 | kind: Io | skips:  0 | arrived: 14994ms
+[Worker  5] FINISH task  728 | kind: Cpu | arrived: 14673ms | wait: 12793ms | turnaround: 12993ms
+[Worker  5] START  task  729 | kind: Cpu | skips: 10 | arrived: 14693ms
+[Worker  6] FINISH task  739 | kind: Io | arrived: 14894ms | wait: 12689ms | turnaround: 12889ms
+[Worker  2] START  task  745 | kind: Io | skips:  0 | arrived: 15014ms
+[Worker  3] FINISH task  740 | kind: Io | arrived: 14914ms | wait: 12669ms | turnaround: 12869ms
+[Worker  3] START  task  746 | kind: Io | skips:  0 | arrived: 15035ms
+[Worker  7] FINISH task  741 | kind: Io | arrived: 14934ms | wait: 12649ms | turnaround: 12849ms
+[Worker  7] START  task  750 | kind: Io | skips:  0 | arrived: 15116ms
+[Worker  4] FINISH task  742 | kind: Io | arrived: 14954ms | wait: 12629ms | turnaround: 12830ms
+[Worker  4] START  task  753 | kind: Io | skips:  0 | arrived: 15176ms
+[Worker  1] FINISH task  743 | kind: Io | arrived: 14974ms | wait: 12610ms | turnaround: 12810ms
+[Worker  1] START  task  754 | kind: Io | skips:  0 | arrived: 15196ms
+[Worker  0] FINISH task  744 | kind: Io | arrived: 14994ms | wait: 12590ms | turnaround: 12790ms
+[Worker  6] START  task  755 | kind: Io | skips:  0 | arrived: 15216ms
+[Worker  5] FINISH task  729 | kind: Cpu | arrived: 14693ms | wait: 12973ms | turnaround: 13173ms
+[Worker  5] START  task  731 | kind: Cpu | skips: 15 | arrived: 14733ms
+[Worker  2] FINISH task  745 | kind: Io | arrived: 15014ms | wait: 12768ms | turnaround: 12968ms
+[Worker  2] START  task  756 | kind: Io | skips:  0 | arrived: 15236ms
+[Worker  3] FINISH task  746 | kind: Io | arrived: 15035ms | wait: 12749ms | turnaround: 12949ms
+[Worker  3] START  task  757 | kind: Io | skips:  0 | arrived: 15256ms
+[Worker  7] FINISH task  750 | kind: Io | arrived: 15116ms | wait: 12668ms | turnaround: 12868ms
+[Worker  7] START  task  758 | kind: Io | skips:  0 | arrived: 15276ms
+[Worker  1] FINISH task  754 | kind: Io | arrived: 15196ms | wait: 12588ms | turnaround: 12788ms
+[Worker  1] START  task  759 | kind: Io | skips:  0 | arrived: 15296ms
+[Worker  4] FINISH task  753 | kind: Io | arrived: 15176ms | wait: 12608ms | turnaround: 12808ms
+[Worker  4] START  task  761 | kind: Io | skips:  0 | arrived: 15336ms
+[Worker  6] FINISH task  755 | kind: Io | arrived: 15216ms | wait: 12568ms | turnaround: 12768ms
+[Worker  6] START  task  763 | kind: Io | skips:  0 | arrived: 15377ms
+[Worker  5] FINISH task  731 | kind: Cpu | arrived: 14733ms | wait: 13133ms | turnaround: 13333ms
+[Worker  5] START  task  733 | kind: Cpu | skips: 20 | arrived: 14773ms
+[Worker  2] FINISH task  756 | kind: Io | arrived: 15236ms | wait: 12747ms | turnaround: 12947ms
+[Worker  3] FINISH task  757 | kind: Io | arrived: 15256ms | wait: 12727ms | turnaround: 12927ms
+[Worker  7] FINISH task  758 | kind: Io | arrived: 15276ms | wait: 12707ms | turnaround: 12908ms
+[Worker  7] START  task  734 | kind: Cpu | skips: 20 | arrived: 14793ms
+[Worker  1] FINISH task  759 | kind: Io | arrived: 15296ms | wait: 12688ms | turnaround: 12888ms
+[Worker  4] FINISH task  761 | kind: Io | arrived: 15336ms | wait: 12648ms | turnaround: 12848ms
+[Worker  6] FINISH task  763 | kind: Io | arrived: 15377ms | wait: 12608ms | turnaround: 12808ms
+[Worker  5] FINISH task  733 | kind: Cpu | arrived: 14773ms | wait: 13293ms | turnaround: 13493ms
+[Worker  5] START  task  735 | kind: Cpu | skips: 20 | arrived: 14813ms
+[Worker  7] FINISH task  734 | kind: Cpu | arrived: 14793ms | wait: 13390ms | turnaround: 13590ms
+[Worker  7] START  task  736 | kind: Cpu | skips: 20 | arrived: 14834ms
+[Worker  0] START  task  765 | kind: Io | skips:  0 | arrived: 15417ms
+[Worker  4] START  task  766 | kind: Io | skips:  0 | arrived: 15437ms
+[Worker  5] FINISH task  735 | kind: Cpu | arrived: 14813ms | wait: 13453ms | turnaround: 13653ms
+[Worker  5] START  task  747 | kind: Cpu | skips: 12 | arrived: 15055ms
+[Worker  7] FINISH task  736 | kind: Cpu | arrived: 14834ms | wait: 13550ms | turnaround: 13750ms
+[Worker  7] START  task  748 | kind: Cpu | skips: 12 | arrived: 15075ms
+[Worker  0] FINISH task  765 | kind: Io | arrived: 15417ms | wait: 12967ms | turnaround: 13167ms
+[Worker  4] FINISH task  766 | kind: Io | arrived: 15437ms | wait: 12947ms | turnaround: 13147ms
+[Worker  4] START  task  770 | kind: Io | skips:  0 | arrived: 15517ms
+[Worker  2] START  task  772 | kind: Io | skips:  0 | arrived: 15557ms
+[Worker  5] FINISH task  747 | kind: Cpu | arrived: 15055ms | wait: 13412ms | turnaround: 13612ms
+[Worker  3] START  task  749 | kind: Cpu | skips: 14 | arrived: 15095ms
+[Worker  7] FINISH task  748 | kind: Cpu | arrived: 15075ms | wait: 13509ms | turnaround: 13709ms
+[Worker  6] START  task  751 | kind: Cpu | skips: 13 | arrived: 15136ms
+[Worker  4] FINISH task  770 | kind: Io | arrived: 15517ms | wait: 13067ms | turnaround: 13267ms
+[Worker  2] FINISH task  772 | kind: Io | arrived: 15557ms | wait: 13027ms | turnaround: 13227ms
+[Worker  0] START  task  773 | kind: Io | skips:  0 | arrived: 15577ms
+[Worker  1] START  task  774 | kind: Io | skips:  0 | arrived: 15598ms
+[Worker  3] FINISH task  749 | kind: Cpu | arrived: 15095ms | wait: 13572ms | turnaround: 13772ms
+[Worker  3] START  task  752 | kind: Cpu | skips: 15 | arrived: 15156ms
+[Worker  6] FINISH task  751 | kind: Cpu | arrived: 15136ms | wait: 13649ms | turnaround: 13849ms
+[Worker  6] START  task  760 | kind: Cpu | skips:  8 | arrived: 15316ms
+[Worker  1] FINISH task  774 | kind: Io | arrived: 15598ms | wait: 13187ms | turnaround: 13387ms
+[Worker  1] START  task  775 | kind: Io | skips:  0 | arrived: 15618ms
+[Worker  0] FINISH task  773 | kind: Io | arrived: 15577ms | wait: 13207ms | turnaround: 13407ms
+[Worker  0] START  task  777 | kind: Io | skips:  0 | arrived: 15658ms
+[Worker  3] FINISH task  752 | kind: Cpu | arrived: 15156ms | wait: 13712ms | turnaround: 13912ms
+[Worker  3] START  task  762 | kind: Cpu | skips:  9 | arrived: 15356ms
+[Worker  6] FINISH task  760 | kind: Cpu | arrived: 15316ms | wait: 13668ms | turnaround: 13869ms
+[Worker  6] START  task  764 | kind: Cpu | skips:  8 | arrived: 15397ms
+[Worker  1] FINISH task  775 | kind: Io | arrived: 15618ms | wait: 13367ms | turnaround: 13568ms
+[Worker  0] FINISH task  777 | kind: Io | arrived: 15658ms | wait: 13327ms | turnaround: 13527ms
+[Worker  1] START  task  780 | kind: Io | skips:  0 | arrived: 15718ms
+[Worker  0] START  task  781 | kind: Io | skips:  0 | arrived: 15738ms
+[Worker  3] FINISH task  762 | kind: Cpu | arrived: 15356ms | wait: 13711ms | turnaround: 13911ms
+[Worker  3] START  task  767 | kind: Cpu | skips:  8 | arrived: 15457ms
+[Worker  6] FINISH task  764 | kind: Cpu | arrived: 15397ms | wait: 13788ms | turnaround: 13989ms
+[Worker  6] START  task  768 | kind: Cpu | skips:  8 | arrived: 15477ms
+[Worker  1] FINISH task  780 | kind: Io | arrived: 15718ms | wait: 13467ms | turnaround: 13667ms
+[Worker  0] FINISH task  781 | kind: Io | arrived: 15738ms | wait: 13447ms | turnaround: 13647ms
+[Worker  0] START  task  783 | kind: Io | skips:  0 | arrived: 15778ms
+[Worker  1] START  task  782 | kind: Io | skips:  0 | arrived: 15758ms
+[Worker  3] FINISH task  767 | kind: Cpu | arrived: 15457ms | wait: 13811ms | turnaround: 14011ms
+[Worker  3] START  task  769 | kind: Cpu | skips: 10 | arrived: 15497ms
+[Worker  6] FINISH task  768 | kind: Cpu | arrived: 15477ms | wait: 13908ms | turnaround: 14108ms
+[Worker  6] START  task  771 | kind: Cpu | skips:  9 | arrived: 15537ms
+[Worker  0] FINISH task  783 | kind: Io | arrived: 15778ms | wait: 13607ms | turnaround: 13807ms
+[Worker  0] START  task  784 | kind: Io | skips:  0 | arrived: 15798ms
+[Worker  1] FINISH task  782 | kind: Io | arrived: 15758ms | wait: 13627ms | turnaround: 13828ms
+[Worker  1] START  task  785 | kind: Io | skips:  0 | arrived: 15818ms
+[Worker  3] FINISH task  769 | kind: Cpu | arrived: 15497ms | wait: 13971ms | turnaround: 14171ms
+[Worker  3] START  task  776 | kind: Cpu | skips:  7 | arrived: 15638ms
+[Worker  6] FINISH task  771 | kind: Cpu | arrived: 15537ms | wait: 14048ms | turnaround: 14248ms
+[Worker  4] START  task  778 | kind: Cpu | skips:  6 | arrived: 15678ms
+[Worker  0] FINISH task  784 | kind: Io | arrived: 15798ms | wait: 13788ms | turnaround: 13988ms
+[Worker  7] START  task  787 | kind: Io | skips:  0 | arrived: 15859ms
+[Worker  1] FINISH task  785 | kind: Io | arrived: 15818ms | wait: 13768ms | turnaround: 13968ms
+[Worker  1] START  task  788 | kind: Io | skips:  0 | arrived: 15879ms
+[Worker  3] FINISH task  776 | kind: Cpu | arrived: 15638ms | wait: 14031ms | turnaround: 14231ms
+[Worker  3] START  task  779 | kind: Cpu | skips:  8 | arrived: 15698ms
+[Worker  4] FINISH task  778 | kind: Cpu | arrived: 15678ms | wait: 14108ms | turnaround: 14308ms
+[Worker  4] START  task  786 | kind: Cpu | skips:  2 | arrived: 15838ms
+[Worker  7] FINISH task  787 | kind: Io | arrived: 15859ms | wait: 13927ms | turnaround: 14128ms
+[Worker  2] START  task  790 | kind: Io | skips:  0 | arrived: 15919ms
+[Worker  1] FINISH task  788 | kind: Io | arrived: 15879ms | wait: 13908ms | turnaround: 14108ms
+[Worker  1] START  task  792 | kind: Io | skips:  0 | arrived: 15959ms
+[Worker  3] FINISH task  779 | kind: Cpu | arrived: 15698ms | wait: 14170ms | turnaround: 14371ms
+[Worker  3] START  task  789 | kind: Cpu | skips:  2 | arrived: 15899ms
+[Worker  4] FINISH task  786 | kind: Cpu | arrived: 15838ms | wait: 14148ms | turnaround: 14348ms
+[Worker  4] START  task  791 | kind: Cpu | skips:  1 | arrived: 15939ms
+[Worker  2] FINISH task  790 | kind: Io | arrived: 15919ms | wait: 14067ms | turnaround: 14268ms
+[Worker  2] START  task  793 | kind: Io | skips:  0 | arrived: 15979ms
+[Worker  1] FINISH task  792 | kind: Io | arrived: 15959ms | wait: 14028ms | turnaround: 14228ms
+[Worker  1] START  task  794 | kind: Io | skips:  0 | arrived: 15999ms
+[Worker  3] FINISH task  789 | kind: Cpu | arrived: 15899ms | wait: 14170ms | turnaround: 14370ms
+[Worker  3] START  task  798 | kind: Cpu | skips:  0 | arrived: 16080ms
+[Worker  4] FINISH task  791 | kind: Cpu | arrived: 15939ms | wait: 14247ms | turnaround: 14447ms
+[Worker  4] START  task  803 | kind: Cpu | skips:  0 | arrived: 16181ms
+[Worker  2] FINISH task  793 | kind: Io | arrived: 15979ms | wait: 14207ms | turnaround: 14407ms
+[Worker  2] START  task  795 | kind: Io | skips:  2 | arrived: 16019ms
+[Worker  1] FINISH task  794 | kind: Io | arrived: 15999ms | wait: 14188ms | turnaround: 14388ms
+[Worker  1] START  task  796 | kind: Io | skips:  2 | arrived: 16039ms
+[Worker  3] FINISH task  798 | kind: Cpu | arrived: 16080ms | wait: 14189ms | turnaround: 14389ms
+[Worker  3] START  task  815 | kind: Cpu | skips:  0 | arrived: 16422ms
+[Worker  4] FINISH task  803 | kind: Cpu | arrived: 16181ms | wait: 14205ms | turnaround: 14405ms
+[Worker  4] START  task  816 | kind: Cpu | skips:  0 | arrived: 16443ms
+[Worker  2] FINISH task  795 | kind: Io | arrived: 16019ms | wait: 14367ms | turnaround: 14567ms
+[Worker  2] START  task  797 | kind: Io | skips:  4 | arrived: 16059ms
+[Worker  1] FINISH task  796 | kind: Io | arrived: 16039ms | wait: 14348ms | turnaround: 14548ms
+[Worker  1] START  task  799 | kind: Io | skips:  3 | arrived: 16100ms
+[Worker  3] FINISH task  815 | kind: Cpu | arrived: 16422ms | wait: 14047ms | turnaround: 14247ms
+[Worker  3] START  task  819 | kind: Cpu | skips:  0 | arrived: 16504ms
+[Worker  4] FINISH task  816 | kind: Cpu | arrived: 16443ms | wait: 14143ms | turnaround: 14343ms
+[Worker  4] START  task  820 | kind: Cpu | skips:  0 | arrived: 16524ms
+[Worker  2] FINISH task  797 | kind: Io | arrived: 16059ms | wait: 14527ms | turnaround: 14727ms
+[Worker  2] START  task  800 | kind: Io | skips:  5 | arrived: 16121ms
+[Worker  1] FINISH task  799 | kind: Io | arrived: 16100ms | wait: 14487ms | turnaround: 14688ms
+[Worker  1] START  task  801 | kind: Io | skips:  5 | arrived: 16141ms
+[Worker  3] FINISH task  819 | kind: Cpu | arrived: 16504ms | wait: 14166ms | turnaround: 14366ms
+[Worker  3] START  task  823 | kind: Cpu | skips:  0 | arrived: 16584ms
+[Worker  4] FINISH task  820 | kind: Cpu | arrived: 16524ms | wait: 14263ms | turnaround: 14463ms
+[Worker  4] START  task  829 | kind: Cpu | skips:  0 | arrived: 16705ms
+[Worker  2] FINISH task  800 | kind: Io | arrived: 16121ms | wait: 14666ms | turnaround: 14866ms
+[Worker  1] FINISH task  801 | kind: Io | arrived: 16141ms | wait: 14646ms | turnaround: 14846ms
+[Worker  1] START  task  802 | kind: Io | skips:  7 | arrived: 16161ms
+[Worker  5] START  task  804 | kind: Io | skips:  6 | arrived: 16201ms
+[Worker  3] FINISH task  823 | kind: Cpu | arrived: 16584ms | wait: 14285ms | turnaround: 14485ms
+[Worker  3] START  task  835 | kind: Cpu | skips:  0 | arrived: 16825ms
+[Worker  4] FINISH task  829 | kind: Cpu | arrived: 16705ms | wait: 14282ms | turnaround: 14482ms
+[Worker  6] START  task  841 | kind: Cpu | skips:  0 | arrived: 16946ms
+[Worker  1] FINISH task  802 | kind: Io | arrived: 16161ms | wait: 14829ms | turnaround: 15029ms
+[Worker  1] START  task  805 | kind: Io | skips:  8 | arrived: 16222ms
+[Worker  5] FINISH task  804 | kind: Io | arrived: 16201ms | wait: 14789ms | turnaround: 14989ms
+[Worker  5] START  task  806 | kind: Io | skips:  8 | arrived: 16242ms
+[Worker  3] FINISH task  835 | kind: Cpu | arrived: 16825ms | wait: 14245ms | turnaround: 14445ms
+[Worker  3] START  task  845 | kind: Cpu | skips:  0 | arrived: 17026ms
+[Worker  6] FINISH task  841 | kind: Cpu | arrived: 16946ms | wait: 14242ms | turnaround: 14442ms
+[Worker  6] START  task  847 | kind: Cpu | skips:  0 | arrived: 17066ms
+[Worker  1] FINISH task  805 | kind: Io | arrived: 16222ms | wait: 14969ms | turnaround: 15169ms
+[Worker  1] START  task  807 | kind: Io | skips: 10 | arrived: 16262ms
+[Worker  5] FINISH task  806 | kind: Io | arrived: 16242ms | wait: 14949ms | turnaround: 15149ms
+[Worker  5] START  task  808 | kind: Io | skips: 10 | arrived: 16282ms
+[Worker  3] FINISH task  845 | kind: Cpu | arrived: 17026ms | wait: 14244ms | turnaround: 14444ms
+[Worker  3] START  task  848 | kind: Cpu | skips:  0 | arrived: 17086ms
+[Worker  6] FINISH task  847 | kind: Cpu | arrived: 17066ms | wait: 14321ms | turnaround: 14522ms
+[Worker  6] START  task  855 | kind: Cpu | skips:  0 | arrived: 17228ms
+[Worker  1] FINISH task  807 | kind: Io | arrived: 16262ms | wait: 15129ms | turnaround: 15329ms
+[Worker  1] START  task  809 | kind: Io | skips: 12 | arrived: 16302ms
+[Worker  5] FINISH task  808 | kind: Io | arrived: 16282ms | wait: 15109ms | turnaround: 15311ms
+[Worker  5] START  task  810 | kind: Io | skips: 12 | arrived: 16322ms
+[Worker  3] FINISH task  848 | kind: Cpu | arrived: 17086ms | wait: 14384ms | turnaround: 14584ms
+[Worker  3] START  task  858 | kind: Cpu | skips:  0 | arrived: 17288ms
+[Worker  6] FINISH task  855 | kind: Cpu | arrived: 17228ms | wait: 14360ms | turnaround: 14560ms
+[Worker  2] START  task  862 | kind: Cpu | skips:  0 | arrived: 17368ms
+[Worker  1] FINISH task  809 | kind: Io | arrived: 16302ms | wait: 15290ms | turnaround: 15490ms
+[Worker  0] START  task  811 | kind: Io | skips: 14 | arrived: 16342ms
+[Worker  5] FINISH task  810 | kind: Io | arrived: 16322ms | wait: 15271ms | turnaround: 15471ms
+[Worker  4] START  task  812 | kind: Io | skips: 14 | arrived: 16362ms
+[Worker  3] FINISH task  858 | kind: Cpu | arrived: 17288ms | wait: 14382ms | turnaround: 14582ms
+[Worker  3] START  task  868 | kind: Cpu | skips:  0 | arrived: 17490ms
+[Worker  2] FINISH task  862 | kind: Cpu | arrived: 17368ms | wait: 14420ms | turnaround: 14620ms
+[Worker  6] START  task  870 | kind: Cpu | skips:  0 | arrived: 17531ms
+[Worker  0] FINISH task  811 | kind: Io | arrived: 16342ms | wait: 15450ms | turnaround: 15651ms
+[Worker  7] START  task  813 | kind: Io | skips: 16 | arrived: 16382ms
+[Worker  4] FINISH task  812 | kind: Io | arrived: 16362ms | wait: 15431ms | turnaround: 15632ms
+[Worker  4] START  task  814 | kind: Io | skips: 16 | arrived: 16402ms
+[Worker  3] FINISH task  868 | kind: Cpu | arrived: 17490ms | wait: 14380ms | turnaround: 14580ms
+[Worker  3] START  task  871 | kind: Cpu | skips:  0 | arrived: 17551ms
+[Worker  6] FINISH task  870 | kind: Cpu | arrived: 17531ms | wait: 14458ms | turnaround: 14658ms
+[Worker  6] START  task  876 | kind: Cpu | skips:  0 | arrived: 17651ms
+[Worker  7] FINISH task  813 | kind: Io | arrived: 16382ms | wait: 15611ms | turnaround: 15811ms
+[Worker  7] START  task  817 | kind: Io | skips: 16 | arrived: 16464ms
+[Worker  4] FINISH task  814 | kind: Io | arrived: 16402ms | wait: 15591ms | turnaround: 15792ms
+[Worker  4] START  task  818 | kind: Io | skips: 16 | arrived: 16484ms
+[Worker  3] FINISH task  871 | kind: Cpu | arrived: 17551ms | wait: 14520ms | turnaround: 14721ms
+[Worker  3] START  task  877 | kind: Cpu | skips:  0 | arrived: 17671ms
+[Worker  6] FINISH task  876 | kind: Cpu | arrived: 17651ms | wait: 14537ms | turnaround: 14738ms
+[Worker  6] START  task  879 | kind: Cpu | skips:  0 | arrived: 17711ms
+[Worker  7] FINISH task  817 | kind: Io | arrived: 16464ms | wait: 15729ms | turnaround: 15930ms
+[Worker  7] START  task  821 | kind: Io | skips: 16 | arrived: 16544ms
+[Worker  4] FINISH task  818 | kind: Io | arrived: 16484ms | wait: 15710ms | turnaround: 15910ms
+[Worker  4] START  task  822 | kind: Io | skips: 16 | arrived: 16564ms
+[Worker  3] FINISH task  877 | kind: Cpu | arrived: 17671ms | wait: 14600ms | turnaround: 14801ms
+[Worker  3] START  task  885 | kind: Cpu | skips:  0 | arrived: 17832ms
+[Worker  6] FINISH task  879 | kind: Cpu | arrived: 17711ms | wait: 14678ms | turnaround: 14878ms
+[Worker  6] START  task  886 | kind: Cpu | skips:  0 | arrived: 17852ms
+[Worker  7] FINISH task  821 | kind: Io | arrived: 16544ms | wait: 15849ms | turnaround: 16049ms
+[Worker  7] START  task  824 | kind: Io | skips: 17 | arrived: 16604ms
+[Worker  4] FINISH task  822 | kind: Io | arrived: 16564ms | wait: 15830ms | turnaround: 16030ms
+[Worker  4] START  task  825 | kind: Io | skips: 17 | arrived: 16624ms
+[Worker  3] FINISH task  885 | kind: Cpu | arrived: 17832ms | wait: 14640ms | turnaround: 14840ms
+[Worker  3] START  task  890 | kind: Cpu | skips:  0 | arrived: 17932ms
+[Worker  6] FINISH task  886 | kind: Cpu | arrived: 17852ms | wait: 14737ms | turnaround: 14937ms
+[Worker  6] START  task  891 | kind: Cpu | skips:  0 | arrived: 17952ms
+[Worker  7] FINISH task  824 | kind: Io | arrived: 16604ms | wait: 15989ms | turnaround: 16189ms
+[Worker  7] START  task  826 | kind: Io | skips: 19 | arrived: 16644ms
+[Worker  4] FINISH task  825 | kind: Io | arrived: 16624ms | wait: 15970ms | turnaround: 16170ms
+[Worker  4] START  task  827 | kind: Io | skips: 19 | arrived: 16665ms
+[Worker  3] FINISH task  890 | kind: Cpu | arrived: 17932ms | wait: 14740ms | turnaround: 14940ms
+[Worker  3] START  task  892 | kind: Cpu | skips:  0 | arrived: 17972ms
+[Worker  6] FINISH task  891 | kind: Cpu | arrived: 17952ms | wait: 14837ms | turnaround: 15037ms
+[Worker  6] START  task  828 | kind: Io | skips: 20 | arrived: 16685ms
+[Worker  5] START  task  898 | kind: Cpu | skips:  0 | arrived: 18093ms
+[Worker  7] FINISH task  826 | kind: Io | arrived: 16644ms | wait: 16149ms | turnaround: 16349ms
+[Worker  4] FINISH task  827 | kind: Io | arrived: 16665ms | wait: 16130ms | turnaround: 16330ms
+[Worker  4] START  task  830 | kind: Io | skips: 20 | arrived: 16725ms
+[Worker  3] FINISH task  892 | kind: Cpu | arrived: 17972ms | wait: 14900ms | turnaround: 15101ms
+[Worker  3] START  task  831 | kind: Io | skips: 20 | arrived: 16745ms
+[Worker  2] START  task  833 | kind: Io | skips: 20 | arrived: 16785ms
+[Worker  0] START  task  834 | kind: Io | skips: 20 | arrived: 16805ms
+[Worker  1] START  task  832 | kind: Io | skips: 20 | arrived: 16765ms
+[Worker  6] FINISH task  828 | kind: Io | arrived: 16685ms | wait: 16305ms | turnaround: 16505ms
+[Worker  6] START  task  836 | kind: Io | skips: 19 | arrived: 16845ms
+[Worker  5] FINISH task  898 | kind: Cpu | arrived: 18093ms | wait: 14897ms | turnaround: 15097ms
+[Worker  5] START  task  902 | kind: Cpu | skips:  0 | arrived: 18173ms
+[Worker  4] FINISH task  830 | kind: Io | arrived: 16725ms | wait: 16270ms | turnaround: 16470ms
+[Worker  4] START  task  837 | kind: Io | skips: 20 | arrived: 16865ms
+[Worker  3] FINISH task  831 | kind: Io | arrived: 16745ms | wait: 16328ms | turnaround: 16528ms
+[Worker  3] START  task  838 | kind: Io | skips: 20 | arrived: 16885ms
+[Worker  2] FINISH task  833 | kind: Io | arrived: 16785ms | wait: 16288ms | turnaround: 16489ms
+[Worker  2] START  task  839 | kind: Io | skips: 20 | arrived: 16906ms
+[Worker  0] FINISH task  834 | kind: Io | arrived: 16805ms | wait: 16268ms | turnaround: 16469ms
+[Worker  0] START  task  840 | kind: Io | skips: 20 | arrived: 16926ms
+[Worker  1] FINISH task  832 | kind: Io | arrived: 16765ms | wait: 16308ms | turnaround: 16509ms
+[Worker  1] START  task  842 | kind: Io | skips: 19 | arrived: 16966ms
+[Worker  6] FINISH task  836 | kind: Io | arrived: 16845ms | wait: 16344ms | turnaround: 16545ms
+[Worker  6] START  task  843 | kind: Io | skips: 19 | arrived: 16986ms
+[Worker  5] FINISH task  902 | kind: Cpu | arrived: 18173ms | wait: 15017ms | turnaround: 15217ms
+[Worker  5] START  task  903 | kind: Cpu | skips:  0 | arrived: 18193ms
+[Worker  4] FINISH task  837 | kind: Io | arrived: 16865ms | wait: 16329ms | turnaround: 16530ms
+[Worker  4] START  task  844 | kind: Io | skips: 20 | arrived: 17006ms
+[Worker  3] FINISH task  838 | kind: Io | arrived: 16885ms | wait: 16388ms | turnaround: 16588ms
+[Worker  3] START  task  846 | kind: Io | skips: 19 | arrived: 17046ms
+[Worker  2] FINISH task  839 | kind: Io | arrived: 16906ms | wait: 16369ms | turnaround: 16569ms
+[Worker  7] START  task  849 | kind: Io | skips: 17 | arrived: 17106ms
+[Worker  1] FINISH task  842 | kind: Io | arrived: 16966ms | wait: 16309ms | turnaround: 16509ms
+[Worker  1] START  task  850 | kind: Io | skips: 17 | arrived: 17127ms
+[Worker  0] FINISH task  840 | kind: Io | arrived: 16926ms | wait: 16349ms | turnaround: 16549ms
+[Worker  0] START  task  851 | kind: Io | skips: 17 | arrived: 17147ms
+[Worker  6] FINISH task  843 | kind: Io | arrived: 16986ms | wait: 16404ms | turnaround: 16604ms
+[Worker  6] START  task  852 | kind: Io | skips: 17 | arrived: 17167ms
+[Worker  5] FINISH task  903 | kind: Cpu | arrived: 18193ms | wait: 15197ms | turnaround: 15397ms
+[Worker  5] START  task  907 | kind: Cpu | skips:  0 | arrived: 18274ms
+[Worker  4] FINISH task  844 | kind: Io | arrived: 17006ms | wait: 16389ms | turnaround: 16589ms
+[Worker  4] START  task  853 | kind: Io | skips: 18 | arrived: 17188ms
+[Worker  3] FINISH task  846 | kind: Io | arrived: 17046ms | wait: 16427ms | turnaround: 16628ms
+[Worker  3] START  task  854 | kind: Io | skips: 18 | arrived: 17208ms
+[Worker  7] FINISH task  849 | kind: Io | arrived: 17106ms | wait: 16368ms | turnaround: 16568ms
+[Worker  7] START  task  856 | kind: Io | skips: 17 | arrived: 17248ms
+[Worker  1] FINISH task  850 | kind: Io | arrived: 17127ms | wait: 16347ms | turnaround: 16548ms
+[Worker  0] FINISH task  851 | kind: Io | arrived: 17147ms | wait: 16328ms | turnaround: 16528ms
+[Worker  1] START  task  857 | kind: Io | skips: 17 | arrived: 17268ms
+[Worker  0] START  task  859 | kind: Io | skips: 16 | arrived: 17308ms
+[Worker  6] FINISH task  852 | kind: Io | arrived: 17167ms | wait: 16423ms | turnaround: 16623ms
+[Worker  6] START  task  860 | kind: Io | skips: 16 | arrived: 17328ms
+[Worker  5] FINISH task  907 | kind: Cpu | arrived: 18274ms | wait: 15317ms | turnaround: 15517ms
+[Worker  5] START  task  908 | kind: Cpu | skips:  0 | arrived: 18294ms
+[Worker  4] FINISH task  853 | kind: Io | arrived: 17188ms | wait: 16408ms | turnaround: 16608ms
+[Worker  4] START  task  861 | kind: Io | skips: 17 | arrived: 17348ms
+[Worker  3] FINISH task  854 | kind: Io | arrived: 17208ms | wait: 16466ms | turnaround: 16666ms
+[Worker  3] START  task  863 | kind: Io | skips: 16 | arrived: 17389ms
+[Worker  7] FINISH task  856 | kind: Io | arrived: 17248ms | wait: 16427ms | turnaround: 16627ms
+[Worker  2] START  task  864 | kind: Io | skips: 16 | arrived: 17409ms
+[Worker  1] FINISH task  857 | kind: Io | arrived: 17268ms | wait: 16407ms | turnaround: 16607ms
+[Worker  0] FINISH task  859 | kind: Io | arrived: 17308ms | wait: 16367ms | turnaround: 16567ms
+[Worker  1] START  task  865 | kind: Io | skips: 16 | arrived: 17429ms
+[Worker  0] START  task  866 | kind: Io | skips: 16 | arrived: 17449ms
+[Worker  6] FINISH task  860 | kind: Io | arrived: 17328ms | wait: 16462ms | turnaround: 16662ms
+[Worker  6] START  task  867 | kind: Io | skips: 16 | arrived: 17470ms
+[Worker  5] FINISH task  908 | kind: Cpu | arrived: 18294ms | wait: 15497ms | turnaround: 15697ms
+[Worker  5] START  task  911 | kind: Cpu | skips:  0 | arrived: 18354ms
+[Worker  4] FINISH task  861 | kind: Io | arrived: 17348ms | wait: 16447ms | turnaround: 16647ms
+[Worker  4] START  task  869 | kind: Io | skips: 16 | arrived: 17511ms
+[Worker  3] FINISH task  863 | kind: Io | arrived: 17389ms | wait: 16485ms | turnaround: 16686ms
+[Worker  3] START  task  872 | kind: Io | skips: 14 | arrived: 17571ms
+[Worker  2] FINISH task  864 | kind: Io | arrived: 17409ms | wait: 16466ms | turnaround: 16666ms
+[Worker  2] START  task  873 | kind: Io | skips: 14 | arrived: 17591ms
+[Worker  1] FINISH task  865 | kind: Io | arrived: 17429ms | wait: 16447ms | turnaround: 16647ms
+[Worker  1] START  task  874 | kind: Io | skips: 14 | arrived: 17611ms
+[Worker  0] FINISH task  866 | kind: Io | arrived: 17449ms | wait: 16427ms | turnaround: 16627ms
+[Worker  0] START  task  875 | kind: Io | skips: 14 | arrived: 17631ms
+[Worker  6] FINISH task  867 | kind: Io | arrived: 17470ms | wait: 16520ms | turnaround: 16720ms
+[Worker  6] START  task  878 | kind: Io | skips: 12 | arrived: 17691ms
+[Worker  5] FINISH task  911 | kind: Cpu | arrived: 18354ms | wait: 15637ms | turnaround: 15837ms
+[Worker  5] START  task  912 | kind: Cpu | skips:  0 | arrived: 18374ms
+[Worker  4] FINISH task  869 | kind: Io | arrived: 17511ms | wait: 16485ms | turnaround: 16685ms
+[Worker  4] START  task  880 | kind: Io | skips: 12 | arrived: 17731ms
+[Worker  3] FINISH task  872 | kind: Io | arrived: 17571ms | wait: 16503ms | turnaround: 16703ms
+[Worker  3] START  task  881 | kind: Io | skips: 12 | arrived: 17752ms
+[Worker  2] FINISH task  873 | kind: Io | arrived: 17591ms | wait: 16484ms | turnaround: 16684ms
+[Worker  7] START  task  882 | kind: Io | skips: 12 | arrived: 17772ms
+[Worker  1] FINISH task  874 | kind: Io | arrived: 17611ms | wait: 16464ms | turnaround: 16665ms
+[Worker  1] START  task  883 | kind: Io | skips: 12 | arrived: 17792ms
+[Worker  0] FINISH task  875 | kind: Io | arrived: 17631ms | wait: 16445ms | turnaround: 16645ms
+[Worker  0] START  task  884 | kind: Io | skips: 12 | arrived: 17812ms
+[Worker  6] FINISH task  878 | kind: Io | arrived: 17691ms | wait: 16500ms | turnaround: 16700ms
+[Worker  6] START  task  887 | kind: Io | skips: 10 | arrived: 17872ms
+[Worker  5] FINISH task  912 | kind: Cpu | arrived: 18374ms | wait: 15817ms | turnaround: 16017ms
+[Worker  5] START  task  913 | kind: Cpu | skips:  0 | arrived: 18394ms
+[Worker  4] FINISH task  880 | kind: Io | arrived: 17731ms | wait: 16464ms | turnaround: 16664ms
+[Worker  4] START  task  888 | kind: Io | skips: 11 | arrived: 17892ms
+[Worker  3] FINISH task  881 | kind: Io | arrived: 17752ms | wait: 16523ms | turnaround: 16723ms
+[Worker  3] START  task  889 | kind: Io | skips: 11 | arrived: 17912ms
+[Worker  7] FINISH task  882 | kind: Io | arrived: 17772ms | wait: 16504ms | turnaround: 16704ms
+[Worker  7] START  task  893 | kind: Io | skips:  8 | arrived: 17992ms
+[Worker  1] FINISH task  883 | kind: Io | arrived: 17792ms | wait: 16484ms | turnaround: 16684ms
+[Worker  1] START  task  894 | kind: Io | skips:  8 | arrived: 18013ms
+[Worker  0] FINISH task  884 | kind: Io | arrived: 17812ms | wait: 16464ms | turnaround: 16664ms
+[Worker  0] START  task  895 | kind: Io | skips:  8 | arrived: 18033ms
+[Worker  6] FINISH task  887 | kind: Io | arrived: 17872ms | wait: 16519ms | turnaround: 16719ms
+[Worker  6] START  task  896 | kind: Io | skips:  8 | arrived: 18053ms
+[Worker  5] FINISH task  913 | kind: Cpu | arrived: 18394ms | wait: 15997ms | turnaround: 16197ms
+[Worker  2] START  task  914 | kind: Cpu | skips:  0 | arrived: 18414ms
+[Worker  4] FINISH task  888 | kind: Io | arrived: 17892ms | wait: 16504ms | turnaround: 16704ms
+[Worker  4] START  task  897 | kind: Io | skips:  9 | arrived: 18073ms
+[Worker  3] FINISH task  889 | kind: Io | arrived: 17912ms | wait: 16562ms | turnaround: 16762ms
+[Worker  3] START  task  899 | kind: Io | skips:  8 | arrived: 18113ms
+[Worker  7] FINISH task  893 | kind: Io | arrived: 17992ms | wait: 16483ms | turnaround: 16683ms
+[Worker  7] START  task  900 | kind: Io | skips:  8 | arrived: 18133ms
+[Worker  1] FINISH task  894 | kind: Io | arrived: 18013ms | wait: 16463ms | turnaround: 16663ms
+[Worker  1] START  task  901 | kind: Io | skips:  8 | arrived: 18153ms
+[Worker  0] FINISH task  895 | kind: Io | arrived: 18033ms | wait: 16443ms | turnaround: 16643ms
+[Worker  0] START  task  904 | kind: Io | skips:  6 | arrived: 18213ms
+[Worker  6] FINISH task  896 | kind: Io | arrived: 18053ms | wait: 16539ms | turnaround: 16739ms
+[Worker  6] START  task  905 | kind: Io | skips:  6 | arrived: 18234ms
+[Worker  2] FINISH task  914 | kind: Cpu | arrived: 18414ms | wait: 16177ms | turnaround: 16377ms
+[Worker  2] START  task  921 | kind: Cpu | skips:  0 | arrived: 18561ms
+[Worker  4] FINISH task  897 | kind: Io | arrived: 18073ms | wait: 16523ms | turnaround: 16723ms
+[Worker  4] START  task  906 | kind: Io | skips:  7 | arrived: 18254ms
+[Worker  3] FINISH task  899 | kind: Io | arrived: 18113ms | wait: 16562ms | turnaround: 16762ms
+[Worker  3] START  task  909 | kind: Io | skips:  5 | arrived: 18314ms
+[Worker  7] FINISH task  900 | kind: Io | arrived: 18133ms | wait: 16542ms | turnaround: 16742ms
+[Worker  7] START  task  910 | kind: Io | skips:  5 | arrived: 18334ms
+[Worker  1] FINISH task  901 | kind: Io | arrived: 18153ms | wait: 16523ms | turnaround: 16723ms
+[Worker  1] START  task  915 | kind: Io | skips:  1 | arrived: 18434ms
+[Worker  0] FINISH task  904 | kind: Io | arrived: 18213ms | wait: 16463ms | turnaround: 16663ms
+[Worker  0] START  task  916 | kind: Io | skips:  1 | arrived: 18454ms
+[Worker  6] FINISH task  905 | kind: Io | arrived: 18234ms | wait: 16558ms | turnaround: 16758ms
+[Worker  5] START  task  917 | kind: Io | skips:  1 | arrived: 18475ms
+[Worker  2] FINISH task  921 | kind: Cpu | arrived: 18561ms | wait: 16231ms | turnaround: 16431ms
+[Worker  2] START  task  923 | kind: Cpu | skips:  0 | arrived: 18601ms
+[Worker  4] FINISH task  906 | kind: Io | arrived: 18254ms | wait: 16543ms | turnaround: 16743ms
+[Worker  6] START  task  918 | kind: Io | skips:  2 | arrived: 18495ms
+[Worker  3] FINISH task  909 | kind: Io | arrived: 18314ms | wait: 16561ms | turnaround: 16761ms
+[Worker  3] START  task  919 | kind: Io | skips:  2 | arrived: 18515ms
+[Worker  7] FINISH task  910 | kind: Io | arrived: 18334ms | wait: 16542ms | turnaround: 16742ms
+[Worker  7] START  task  920 | kind: Io | skips:  2 | arrived: 18541ms
+[Worker  1] FINISH task  915 | kind: Io | arrived: 18434ms | wait: 16442ms | turnaround: 16642ms
+[Worker  0] FINISH task  916 | kind: Io | arrived: 18454ms | wait: 16422ms | turnaround: 16622ms
+[Worker  0] START  task  925 | kind: Io | skips:  0 | arrived: 18641ms
+[Worker  1] START  task  922 | kind: Io | skips:  1 | arrived: 18581ms
+[Worker  5] FINISH task  917 | kind: Io | arrived: 18475ms | wait: 16517ms | turnaround: 16717ms
+[Worker  5] START  task  926 | kind: Io | skips:  0 | arrived: 18661ms
+[Worker  2] FINISH task  923 | kind: Cpu | arrived: 18601ms | wait: 16391ms | turnaround: 16591ms
+[Worker  2] START  task  924 | kind: Cpu | skips:  2 | arrived: 18621ms
+[Worker  6] FINISH task  918 | kind: Io | arrived: 18495ms | wait: 16502ms | turnaround: 16702ms
+[Worker  6] START  task  928 | kind: Io | skips:  0 | arrived: 18701ms
+[Worker  3] FINISH task  919 | kind: Io | arrived: 18515ms | wait: 16560ms | turnaround: 16760ms
+[Worker  3] START  task  929 | kind: Io | skips:  0 | arrived: 18721ms
+[Worker  7] FINISH task  920 | kind: Io | arrived: 18541ms | wait: 16535ms | turnaround: 16735ms
+[Worker  7] START  task  930 | kind: Io | skips:  0 | arrived: 18741ms
+[Worker  0] FINISH task  925 | kind: Io | arrived: 18641ms | wait: 16435ms | turnaround: 16635ms
+[Worker  0] START  task  931 | kind: Io | skips:  0 | arrived: 18761ms
+[Worker  1] FINISH task  922 | kind: Io | arrived: 18581ms | wait: 16495ms | turnaround: 16696ms
+[Worker  1] START  task  932 | kind: Io | skips:  0 | arrived: 18782ms
+[Worker  5] FINISH task  926 | kind: Io | arrived: 18661ms | wait: 16531ms | turnaround: 16731ms
+[Worker  5] START  task  933 | kind: Io | skips:  0 | arrived: 18802ms
+[Worker  2] FINISH task  924 | kind: Cpu | arrived: 18621ms | wait: 16571ms | turnaround: 16771ms
+[Worker  2] START  task  927 | kind: Cpu | skips:  6 | arrived: 18681ms
+[Worker  6] FINISH task  928 | kind: Io | arrived: 18701ms | wait: 16495ms | turnaround: 16695ms
+[Worker  6] START  task  934 | kind: Io | skips:  0 | arrived: 18822ms
+[Worker  3] FINISH task  929 | kind: Io | arrived: 18721ms | wait: 16554ms | turnaround: 16754ms
+[Worker  3] START  task  937 | kind: Io | skips:  0 | arrived: 18882ms
+[Worker  7] FINISH task  930 | kind: Io | arrived: 18741ms | wait: 16535ms | turnaround: 16735ms
+[Worker  7] START  task  938 | kind: Io | skips:  0 | arrived: 18902ms
+[Worker  0] FINISH task  931 | kind: Io | arrived: 18761ms | wait: 16515ms | turnaround: 16715ms
+[Worker  0] START  task  940 | kind: Io | skips:  0 | arrived: 18942ms
+[Worker  1] FINISH task  932 | kind: Io | arrived: 18782ms | wait: 16495ms | turnaround: 16695ms
+[Worker  1] START  task  942 | kind: Io | skips:  0 | arrived: 18982ms
+[Worker  5] FINISH task  933 | kind: Io | arrived: 18802ms | wait: 16590ms | turnaround: 16790ms
+[Worker  5] START  task  943 | kind: Io | skips:  0 | arrived: 19002ms
+[Worker  2] FINISH task  927 | kind: Cpu | arrived: 18681ms | wait: 16711ms | turnaround: 16911ms
+[Worker  2] START  task  935 | kind: Cpu | skips:  5 | arrived: 18842ms
+[Worker  6] FINISH task  934 | kind: Io | arrived: 18822ms | wait: 16575ms | turnaround: 16775ms
+[Worker  6] START  task  945 | kind: Io | skips:  0 | arrived: 19043ms
+[Worker  3] FINISH task  937 | kind: Io | arrived: 18882ms | wait: 16593ms | turnaround: 16793ms
+[Worker  3] START  task  946 | kind: Io | skips:  0 | arrived: 19063ms
+[Worker  7] FINISH task  938 | kind: Io | arrived: 18902ms | wait: 16574ms | turnaround: 16774ms
+[Worker  7] START  task  947 | kind: Io | skips:  0 | arrived: 19083ms
+[Worker  1] FINISH task  942 | kind: Io | arrived: 18982ms | wait: 16494ms | turnaround: 16694ms
+[Worker  1] START  task  949 | kind: Io | skips:  0 | arrived: 19123ms
+[Worker  0] FINISH task  940 | kind: Io | arrived: 18942ms | wait: 16534ms | turnaround: 16735ms
+[Worker  0] START  task  950 | kind: Io | skips:  0 | arrived: 19143ms
+[Worker  2] FINISH task  935 | kind: Cpu | arrived: 18842ms | wait: 16751ms | turnaround: 16951ms
+[Worker  2] START  task  936 | kind: Cpu | skips: 10 | arrived: 18862ms
+[Worker  5] FINISH task  943 | kind: Io | arrived: 19002ms | wait: 16590ms | turnaround: 16790ms
+[Worker  5] START  task  951 | kind: Io | skips:  0 | arrived: 19163ms
+[Worker  6] FINISH task  945 | kind: Io | arrived: 19043ms | wait: 16554ms | turnaround: 16756ms
+[Worker  6] START  task  952 | kind: Io | skips:  0 | arrived: 19183ms
+[Worker  3] FINISH task  946 | kind: Io | arrived: 19063ms | wait: 16613ms | turnaround: 16813ms
+[Worker  3] START  task  953 | kind: Io | skips:  0 | arrived: 19203ms
+[Worker  7] FINISH task  947 | kind: Io | arrived: 19083ms | wait: 16594ms | turnaround: 16794ms
+[Worker  7] START  task  955 | kind: Io | skips:  0 | arrived: 19244ms
+[Worker  1] FINISH task  949 | kind: Io | arrived: 19123ms | wait: 16554ms | turnaround: 16754ms
+[Worker  1] START  task  958 | kind: Io | skips:  0 | arrived: 19304ms
+[Worker  0] FINISH task  950 | kind: Io | arrived: 19143ms | wait: 16534ms | turnaround: 16734ms
+[Worker  0] START  task  959 | kind: Io | skips:  0 | arrived: 19324ms
+[Worker  2] FINISH task  936 | kind: Cpu | arrived: 18862ms | wait: 16931ms | turnaround: 17131ms
+[Worker  2] START  task  939 | kind: Cpu | skips: 14 | arrived: 18922ms
+[Worker  5] FINISH task  951 | kind: Io | arrived: 19163ms | wait: 16630ms | turnaround: 16830ms
+[Worker  4] START  task  963 | kind: Io | skips:  0 | arrived: 19404ms
+[Worker  6] FINISH task  952 | kind: Io | arrived: 19183ms | wait: 16615ms | turnaround: 16815ms
+[Worker  6] START  task  966 | kind: Io | skips:  0 | arrived: 19464ms
+[Worker  3] FINISH task  953 | kind: Io | arrived: 19203ms | wait: 16673ms | turnaround: 16873ms
+[Worker  3] START  task  967 | kind: Io | skips:  0 | arrived: 19485ms
+[Worker  7] FINISH task  955 | kind: Io | arrived: 19244ms | wait: 16633ms | turnaround: 16833ms
+[Worker  7] START  task  968 | kind: Io | skips:  0 | arrived: 19505ms
+[Worker  1] FINISH task  958 | kind: Io | arrived: 19304ms | wait: 16573ms | turnaround: 16773ms
+[Worker  1] START  task  969 | kind: Io | skips:  0 | arrived: 19525ms
+[Worker  0] FINISH task  959 | kind: Io | arrived: 19324ms | wait: 16553ms | turnaround: 16753ms
+[Worker  0] START  task  970 | kind: Io | skips:  0 | arrived: 19545ms
+[Worker  2] FINISH task  939 | kind: Cpu | arrived: 18922ms | wait: 17071ms | turnaround: 17271ms
+[Worker  2] START  task  941 | kind: Cpu | skips: 19 | arrived: 18962ms
+[Worker  4] FINISH task  963 | kind: Io | arrived: 19404ms | wait: 16589ms | turnaround: 16789ms
+[Worker  5] START  task  971 | kind: Io | skips:  0 | arrived: 19565ms
+[Worker  6] FINISH task  966 | kind: Io | arrived: 19464ms | wait: 16534ms | turnaround: 16734ms
+[Worker  6] START  task  972 | kind: Io | skips:  0 | arrived: 19585ms
+[Worker  3] FINISH task  967 | kind: Io | arrived: 19485ms | wait: 16592ms | turnaround: 16792ms
+[Worker  3] START  task  973 | kind: Io | skips:  0 | arrived: 19605ms
+[Worker  7] FINISH task  968 | kind: Io | arrived: 19505ms | wait: 16572ms | turnaround: 16772ms
+[Worker  1] FINISH task  969 | kind: Io | arrived: 19525ms | wait: 16553ms | turnaround: 16753ms
+[Worker  0] FINISH task  970 | kind: Io | arrived: 19545ms | wait: 16533ms | turnaround: 16733ms
+[Worker  0] START  task  944 | kind: Cpu | skips: 20 | arrived: 19023ms
+[Worker  2] FINISH task  941 | kind: Cpu | arrived: 18962ms | wait: 17231ms | turnaround: 17431ms
+[Worker  2] START  task  948 | kind: Cpu | skips: 17 | arrived: 19103ms
+[Worker  5] FINISH task  971 | kind: Io | arrived: 19565ms | wait: 16628ms | turnaround: 16829ms
+[Worker  6] FINISH task  972 | kind: Io | arrived: 19585ms | wait: 16614ms | turnaround: 16814ms
+[Worker  6] START  task  975 | kind: Io | skips:  0 | arrived: 19645ms
+[Worker  3] FINISH task  973 | kind: Io | arrived: 19605ms | wait: 16671ms | turnaround: 16871ms
+[Worker  3] START  task  978 | kind: Io | skips:  0 | arrived: 19705ms
+[Worker  0] FINISH task  944 | kind: Cpu | arrived: 19023ms | wait: 17255ms | turnaround: 17455ms
+[Worker  0] START  task  954 | kind: Cpu | skips: 14 | arrived: 19223ms
+[Worker  2] FINISH task  948 | kind: Cpu | arrived: 19103ms | wait: 17290ms | turnaround: 17490ms
+[Worker  2] START  task  956 | kind: Cpu | skips: 13 | arrived: 19264ms
+[Worker  6] FINISH task  975 | kind: Io | arrived: 19645ms | wait: 16754ms | turnaround: 16954ms
+[Worker  6] START  task  979 | kind: Io | skips:  0 | arrived: 19726ms
+[Worker  3] FINISH task  978 | kind: Io | arrived: 19705ms | wait: 16771ms | turnaround: 16971ms
+[Worker  3] START  task  981 | kind: Io | skips:  0 | arrived: 19766ms
+[Worker  0] FINISH task  954 | kind: Cpu | arrived: 19223ms | wait: 17254ms | turnaround: 17454ms
+[Worker  0] START  task  957 | kind: Cpu | skips: 15 | arrived: 19284ms
+[Worker  2] FINISH task  956 | kind: Cpu | arrived: 19264ms | wait: 17330ms | turnaround: 17530ms
+[Worker  2] START  task  960 | kind: Cpu | skips: 13 | arrived: 19344ms
+[Worker  6] FINISH task  979 | kind: Io | arrived: 19726ms | wait: 16874ms | turnaround: 17074ms
+[Worker  6] START  task  982 | kind: Io | skips:  0 | arrived: 19786ms
+[Worker  3] FINISH task  981 | kind: Io | arrived: 19766ms | wait: 16911ms | turnaround: 17111ms
+[Worker  3] START  task  983 | kind: Io | skips:  0 | arrived: 19806ms
+[Worker  0] FINISH task  957 | kind: Cpu | arrived: 19284ms | wait: 17394ms | turnaround: 17594ms
+[Worker  0] START  task  961 | kind: Cpu | skips: 15 | arrived: 19364ms
+[Worker  2] FINISH task  960 | kind: Cpu | arrived: 19344ms | wait: 17450ms | turnaround: 17650ms
+[Worker  2] START  task  962 | kind: Cpu | skips: 15 | arrived: 19384ms
+[Worker  6] FINISH task  982 | kind: Io | arrived: 19786ms | wait: 17014ms | turnaround: 17214ms
+[Worker  6] START  task  984 | kind: Io | skips:  0 | arrived: 19826ms
+[Worker  3] FINISH task  983 | kind: Io | arrived: 19806ms | wait: 17071ms | turnaround: 17271ms
+[Worker  3] START  task  985 | kind: Io | skips:  0 | arrived: 19846ms
+[Worker  0] FINISH task  961 | kind: Cpu | arrived: 19364ms | wait: 17514ms | turnaround: 17714ms
+[Worker  0] START  task  964 | kind: Cpu | skips: 16 | arrived: 19424ms
+[Worker  2] FINISH task  962 | kind: Cpu | arrived: 19384ms | wait: 17610ms | turnaround: 17810ms
+[Worker  2] START  task  965 | kind: Cpu | skips: 16 | arrived: 19444ms
+[Worker  6] FINISH task  984 | kind: Io | arrived: 19826ms | wait: 17174ms | turnaround: 17374ms
+[Worker  6] START  task  986 | kind: Io | skips:  0 | arrived: 19866ms
+[Worker  3] FINISH task  985 | kind: Io | arrived: 19846ms | wait: 17231ms | turnaround: 17431ms
+[Worker  3] START  task  987 | kind: Io | skips:  0 | arrived: 19886ms
+[Worker  0] FINISH task  964 | kind: Cpu | arrived: 19424ms | wait: 17654ms | turnaround: 17854ms
+[Worker  0] START  task  974 | kind: Cpu | skips: 10 | arrived: 19625ms
+[Worker  2] FINISH task  965 | kind: Cpu | arrived: 19444ms | wait: 17750ms | turnaround: 17950ms
+[Worker  2] START  task  976 | kind: Cpu | skips:  9 | arrived: 19665ms
+[Worker  6] FINISH task  986 | kind: Io | arrived: 19866ms | wait: 17334ms | turnaround: 17534ms
+[Worker  6] START  task  988 | kind: Io | skips:  0 | arrived: 19906ms
+[Worker  3] FINISH task  987 | kind: Io | arrived: 19886ms | wait: 17391ms | turnaround: 17591ms
+[Worker  3] START  task  989 | kind: Io | skips:  0 | arrived: 19926ms
+[Worker  0] FINISH task  974 | kind: Cpu | arrived: 19625ms | wait: 17653ms | turnaround: 17853ms
+[Worker  4] START  task  977 | kind: Cpu | skips: 11 | arrived: 19685ms
+[Worker  2] FINISH task  976 | kind: Cpu | arrived: 19665ms | wait: 17729ms | turnaround: 17929ms
+[Worker  2] START  task  980 | kind: Cpu | skips:  9 | arrived: 19746ms
+[Worker  6] FINISH task  988 | kind: Io | arrived: 19906ms | wait: 17494ms | turnaround: 17694ms
+[Worker  6] START  task  990 | kind: Io | skips:  0 | arrived: 19946ms
+[Worker  3] FINISH task  989 | kind: Io | arrived: 19926ms | wait: 17551ms | turnaround: 17752ms
+[Worker  3] START  task  991 | kind: Io | skips:  0 | arrived: 19967ms
+[Worker  4] FINISH task  977 | kind: Cpu | arrived: 19685ms | wait: 17793ms | turnaround: 17993ms
+[Worker  4] START  task  993 | kind: Cpu | skips:  0 | arrived: 20007ms
+[Worker  2] FINISH task  980 | kind: Cpu | arrived: 19746ms | wait: 17849ms | turnaround: 18049ms
+[Worker  2] START  task  995 | kind: Cpu | skips:  0 | arrived: 20048ms
+[Worker  6] FINISH task  990 | kind: Io | arrived: 19946ms | wait: 17654ms | turnaround: 17856ms
+[Worker  0] START  task  992 | kind: Io | skips:  2 | arrived: 19987ms
+[Worker  3] FINISH task  991 | kind: Io | arrived: 19967ms | wait: 17712ms | turnaround: 17912ms
+[Worker  3] START  task  994 | kind: Io | skips:  1 | arrived: 20027ms
+[Worker  4] FINISH task  993 | kind: Cpu | arrived: 20007ms | wait: 17672ms | turnaround: 17872ms
+[Worker  4] START  task  996 | kind: Cpu | skips:  0 | arrived: 20068ms
+[Worker  2] FINISH task  995 | kind: Cpu | arrived: 20048ms | wait: 17748ms | turnaround: 17948ms
+[Worker  2] START  task  999 | kind: Cpu | skips:  0 | arrived: 20128ms
+[Worker  0] FINISH task  992 | kind: Io | arrived: 19987ms | wait: 17816ms | turnaround: 18016ms
+[Worker  0] START  task  997 | kind: Io | skips:  1 | arrived: 20088ms
+[Worker  3] FINISH task  994 | kind: Io | arrived: 20027ms | wait: 17851ms | turnaround: 18052ms
+[Worker  3] START  task  998 | kind: Io | skips:  1 | arrived: 20108ms
+[Worker  4] FINISH task  996 | kind: Cpu | arrived: 20068ms | wait: 17811ms | turnaround: 18011ms
+[Worker  4] START  task 1000 | kind: Io | skips:  0 | arrived: 20148ms
+[Worker  2] FINISH task  999 | kind: Cpu | arrived: 20128ms | wait: 17868ms | turnaround: 18068ms
+[Worker  0] FINISH task  997 | kind: Io | arrived: 20088ms | wait: 17914ms | turnaround: 18115ms
+[Worker  3] FINISH task  998 | kind: Io | arrived: 20108ms | wait: 17970ms | turnaround: 18171ms
+[Worker  4] FINISH task 1000 | kind: Io | arrived: 20148ms | wait: 17931ms | turnaround: 18131ms
+
+╔══════════════════════════════════════════════════════╗
+║  Optimized Results (Budget-Aware + Aging)         ║
+╚══════════════════════════════════════════════════════╝
+
+  ── Required Metrics ──────────────────────────────────
+  Total tasks completed  : 1000
+  Makespan               : 38295 ms
+  Total monitor time     : 38273 ms
+  Total work time        : 200000 ms
+  Avg wait time          : 8911.3 ms
+  Avg turnaround time    : 9111.5 ms
+
+  ── Additional Metrics ────────────────────────────────
+  IO tasks completed     : 701
+  CPU tasks completed    : 299
+  Max wait time          : 17970 ms
+  Avg CPU consumption    : 91.5%
+  Avg active workers     : 5.23 / 8
+  Worker utilization     : 65.4%
+  Avg wait (IO tasks)    : 8997.8 ms
+  Avg wait (CPU tasks)   : 8708.3 ms
+  Fairness gap |IO-CPU|  : 289.5 ms
+  Tasks aged/promoted    : 52
+  Monitor snapshots      : 3777
+
+=======================================================
+  Simulation complete. Clean shutdown confirmed.
+=======================================================

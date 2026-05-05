@@ -53,27 +53,27 @@ cd into either fifo or optimized and run:
 cd into either fifo or optimized and run:
 >cargo run --release --bin stressed
 
-### To output txt files for comparison:
+### To output txt files to root folder for comparison:
 
 #### For fifo:
 
 cd into fifo
 
 for initial run:
->cargo run --release --bin fifo > fifo_balanced.txt
+>cargo run --release --bin fifo > ../fifo_balanced.txt
 
 for fifo stress test:
->cargo run --release --bin stressed > fifo_stressed.txt
+>cargo run --release --bin stressed > ../fifo_stressed.txt
 
 #### For optimized:
 
 cd into optimized
 
 for initial run:
->cargo run --release --bin optimized > optimized_balanced.txt
+>cargo run --release --bin optimized > ../optimized_balanced.txt
 
 for optimized stress test:
->cargo run --release --bin stressed > optimized_stressed.txt
+>cargo run --release --bin stressed > ../optimized_stressed.txt
 
 #### Tool Use Disclosure:
 AI assistance (Anthropic's Claude) was used during this project for debugging concurrency issues, refining the scheduling policy through iterative testing, and clarifying Rust-specific syntax around Mutex, Condvar, and Arc. All implementation decisions, experimental design, and results analysis were directed by the author. All code was reviewed and tested by the author before inclusion.
