@@ -11,11 +11,14 @@ Each policy’s implementations are described, tested, and further stress tested
 Install Rust executable:
 https://rustup.rs/
 
-choose option 1
+Choose option 1
 
-Open Command Prompt or PowerShell, then run:
+Install Git(recommended from here on forward):
+https://git-scm.com/
 
->git clone https://github.com/your-username/your-repo-name.git
+Open Git Bash terminal, then run:
+
+>git clone https://github.com/goose9991/Task_Dispatcher.git
 
 >cd Task_Dispatcher
 
@@ -61,11 +64,11 @@ path = "src/stressed.rs"
 #### To run the initial balanced test:
 
 cd into either fifo or optimized and run:
->cargo run --release fifo
+>cargo run --release --bin fifo
 
 #### or 
 
->cargo run --release optimized
+>cargo run --release --bin optimized
 
 #### To run stress test for either:
 cd into either fifo or optimized and run:
