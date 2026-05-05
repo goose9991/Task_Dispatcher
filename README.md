@@ -6,12 +6,29 @@ The first policy dispatches tasks in a First-In-First-Out (FIFO) manner. The sec
 Each policy’s implementations are described, tested, and further stress tested against burst task delivery.
 
 ## Build instructions:
-Linux or Github Codespace: open terminal and run: 
+
+### For Windows:
+Install Rust executable:
+https://rustup.rs/
+
+choose option 1
+
+Open Command Prompt or PowerShell, then run:
+
+>git clone https://github.com/your-username/your-repo-name.git
+>cd Task_Dispatcher
+
+### For Linux or Github Codespace: open terminal and run: 
+
+>git clone https://github.com/goose9991/Task_Dispatcher.git
+
+>cd Task_Dispatcher
+
 >curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
 Choose option 1 when prompted
 
-Close and reopen terminal, then run:
+Close and reopen terminal, cd into folder and run:
 >source $HOME/.cargo/env
 
 For each folder, fifo and optimized, cd into each folder and install rand:
