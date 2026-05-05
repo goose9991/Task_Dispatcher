@@ -16,6 +16,7 @@ choose option 1
 Open Command Prompt or PowerShell, then run:
 
 >git clone https://github.com/your-username/your-repo-name.git
+
 >cd Task_Dispatcher
 
 ### For Linux or Github Codespace: open terminal and run: 
