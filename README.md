@@ -6,7 +6,7 @@ The first policy dispatches tasks in a First-In-First-Out (FIFO) manner. The sec
 Each policy’s implementations are described, tested, and further stress tested against burst task delivery.
 
 ## Build instructions:
-Linux: open terminal and run: 
+Linux or Github Codespace: open terminal and run: 
 >curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
 Choose option 1 when prompted
