@@ -22,7 +22,9 @@ Open Git Bash terminal, then run:
 
 >cd Task_Dispatcher
 
-### For Linux or Github Codespace: open terminal and run: 
+### For Linux or Github Codespace: 
+
+open terminal and run: 
 
 >git clone https://github.com/goose9991/Task_Dispatcher.git
 
